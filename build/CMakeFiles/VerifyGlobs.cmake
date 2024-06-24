@@ -10,6 +10,7 @@ set(OLD_GLOB
   "/home/stefan/FIT/PJP/slavkste/tests/run/arrayTest.run2.out"
   "/home/stefan/FIT/PJP/slavkste/tests/run/arrayTest.run3.out"
   "/home/stefan/FIT/PJP/slavkste/tests/run/arrayTest.run4.out"
+  "/home/stefan/FIT/PJP/slavkste/tests/run/breakContinue.run1.out"
   "/home/stefan/FIT/PJP/slavkste/tests/run/consts.run1.out"
   "/home/stefan/FIT/PJP/slavkste/tests/run/expressions.run1.out"
   "/home/stefan/FIT/PJP/slavkste/tests/run/expressions.run2.out"
