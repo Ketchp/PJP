@@ -44,6 +44,18 @@ std::unique_ptr<Mila> Parser::parse_mila() {
         );
     }
     {
+        Identifier write{"write"};
+
+        current_table->add_function(
+                std::make_shared<Function>(
+                        Type::INT(),
+                        write,
+                        parameter_list_T{{Type::INT(), Identifier{"x"}}},
+                        current_table
+                )
+        );
+    }
+    {
         Identifier write_str{"write_str"};
 
         current_table->add_function(
@@ -662,6 +674,14 @@ std::shared_ptr<llvm::Module> Parser::_generate()
       llvm::Function *F = llvm::Function::Create(FT, llvm::Function::ExternalLinkage, "writeln", *mila_module);
       for (auto & Arg : F->args())
           Arg.setName("x");
+    }
+    // create write function
+    {
+        std::vector<llvm::Type*> Ints(1, llvm::Type::getInt32Ty(*mila_context));
+        llvm::FunctionType *FT = llvm::FunctionType::get(llvm::Type::getInt32Ty(*mila_context), Ints, false);
+        llvm::Function *F = llvm::Function::Create(FT, llvm::Function::ExternalLinkage, "write", *mila_module);
+        for (auto & Arg : F->args())
+            Arg.setName("x");
     }
     // create write_str function
     {

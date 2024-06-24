@@ -790,9 +790,30 @@ struct CastExpression: public Expression {
         return type;
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &, llvm::Module &, DescentData &) const override {
-        // todo
-        return nullptr;
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module, DescentData &descent) const override {
+        auto child_type = child->get_type();
+        auto *child_value = child->codegen(builder, module, descent);
+        if(child_type->is_int()) {
+            if(type->is_int())
+                return child_value;
+            if(type->is_real())
+                return builder.CreateSIToFP(
+                        child_value,
+                        type->typegen(builder),
+                        "int_to_real"
+                );
+        }
+        else if(child_type->is_real()) {
+            if(type->is_int())
+                return builder.CreateFPToSI(
+                        child_value,
+                        type->typegen(builder),
+                        "real_to_int"
+                );
+            if(type->is_real())
+                return child_value;
+        }
+        throw GeneratorError{"Type cast not supported for type."};
     }
 
     std::shared_ptr<Type> type;

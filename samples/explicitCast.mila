@@ -1,0 +1,33 @@
+program explicitCast;
+
+var i: integer;
+var r: real;
+
+
+procedure write_real(r: real);
+    var off: integer;
+begin
+    write((integer)r);
+    r := r - (real)(integer)r;
+    write_str('.');
+
+    for off := 0 to 2 do
+    begin
+      r := 10.*r;
+      write((integer)r);
+      r := r - (real)(integer)r;
+    end;
+
+    write_str('\n');
+end;
+
+
+begin
+    i := 5;
+    r := (real)i + 0.2;
+    write_real((real)i);
+    write_real(r);
+
+    writeln(i);
+    writeln((integer)r);
+end.

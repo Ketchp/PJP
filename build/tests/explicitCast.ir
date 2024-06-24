@@ -1,0 +1,84 @@
+; ModuleID = 'explicitCast'
+source_filename = "explicitCast"
+
+@i = common global i32 0
+@r = common global double 0.000000e+00
+@str_literal = private constant [2 x i8] c".\00"
+@str_literal.1 = private constant [2 x i8] c"\0A\00"
+
+declare i32 @writeln(i32)
+
+declare i32 @write(i32)
+
+declare i32 @write_str(i8*)
+
+declare i32 @readln(i32*)
+
+define void @write_real(double %r) {
+entry:
+  %off_store = alloca i32, align 4
+  %r_store = alloca double, align 8
+  store double %r, double* %r_store, align 8
+  %load_var = load double, double* %r_store, align 8
+  %real_to_int = fptosi double %load_var to i32
+  %call_tmp = call i32 @write(i32 %real_to_int)
+  %load_var1 = load double, double* %r_store, align 8
+  %load_var2 = load double, double* %r_store, align 8
+  %real_to_int3 = fptosi double %load_var2 to i32
+  %int_to_real = sitofp i32 %real_to_int3 to double
+  %sub_tmp = fsub double %load_var1, %int_to_real
+  store double %sub_tmp, double* %r_store, align 8
+  %call_tmp4 = call i32 @write_str(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @str_literal, i32 0, i32 0))
+  store i32 0, i32* %off_store, align 4
+  br label %body
+
+body:                                             ; preds = %inc, %entry
+  %load_var5 = load double, double* %r_store, align 8
+  %mul_tmp = fmul double 1.000000e+01, %load_var5
+  store double %mul_tmp, double* %r_store, align 8
+  %load_var6 = load double, double* %r_store, align 8
+  %real_to_int7 = fptosi double %load_var6 to i32
+  %call_tmp8 = call i32 @write(i32 %real_to_int7)
+  %load_var9 = load double, double* %r_store, align 8
+  %load_var10 = load double, double* %r_store, align 8
+  %real_to_int11 = fptosi double %load_var10 to i32
+  %int_to_real12 = sitofp i32 %real_to_int11 to double
+  %sub_tmp13 = fsub double %load_var9, %int_to_real12
+  store double %sub_tmp13, double* %r_store, align 8
+  br label %stop
+
+stop:                                             ; preds = %body
+  %iter_value = load i32, i32* %off_store, align 4
+  %stop_cond = icmp eq i32 %iter_value, 2
+  br i1 %stop_cond, label %after, label %inc
+
+inc:                                              ; preds = %stop
+  %iter_value14 = load i32, i32* %off_store, align 4
+  %step = add i32 %iter_value14, 1
+  store i32 %step, i32* %off_store, align 4
+  br label %body
+
+after:                                            ; preds = %stop
+  %call_tmp15 = call i32 @write_str(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @str_literal.1, i32 0, i32 0))
+  ret void
+}
+
+define i32 @main() {
+entry:
+  store i32 5, i32* @i, align 4
+  %load_global = load i32, i32* @i, align 4
+  %int_to_real = sitofp i32 %load_global to double
+  %add_tmp = fadd double %int_to_real, 2.000000e-01
+  store double %add_tmp, double* @r, align 8
+  %load_global1 = load i32, i32* @i, align 4
+  %int_to_real2 = sitofp i32 %load_global1 to double
+  call void @write_real(double %int_to_real2)
+  %load_global3 = load double, double* @r, align 8
+  call void @write_real(double %load_global3)
+  %load_global4 = load i32, i32* @i, align 4
+  %call_tmp = call i32 @writeln(i32 %load_global4)
+  %load_global5 = load double, double* @r, align 8
+  %real_to_int = fptosi double %load_global5 to i32
+  %call_tmp6 = call i32 @writeln(i32 %real_to_int)
+  ret i32 0
+}

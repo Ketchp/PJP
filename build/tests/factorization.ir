@@ -5,6 +5,8 @@ source_filename = "factorization"
 
 declare i32 @writeln(i32)
 
+declare i32 @write(i32)
+
 declare i32 @write_str(i8*)
 
 declare i32 @readln(i32*)
