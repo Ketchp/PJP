@@ -1,0 +1,27 @@
+[
+{
+  "directory": "/home/stefan/FIT/PJP/slavkste/build",
+  "command": "/usr/bin/c++  -I/home/stefan/FIT/PJP/slavkste/src -I/usr/lib/llvm-14/include -Wall -Wextra -pedantic  -g -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++20 -o CMakeFiles/mila.dir/src/main.cpp.o -c /home/stefan/FIT/PJP/slavkste/src/main.cpp",
+  "file": "/home/stefan/FIT/PJP/slavkste/src/main.cpp"
+},
+{
+  "directory": "/home/stefan/FIT/PJP/slavkste/build",
+  "command": "/usr/bin/c++  -I/home/stefan/FIT/PJP/slavkste/src -I/usr/lib/llvm-14/include -Wall -Wextra -pedantic  -g -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++20 -o CMakeFiles/mila.dir/src/Lexer.cpp.o -c /home/stefan/FIT/PJP/slavkste/src/Lexer.cpp",
+  "file": "/home/stefan/FIT/PJP/slavkste/src/Lexer.cpp"
+},
+{
+  "directory": "/home/stefan/FIT/PJP/slavkste/build",
+  "command": "/usr/bin/c++  -I/home/stefan/FIT/PJP/slavkste/src -I/usr/lib/llvm-14/include -Wall -Wextra -pedantic  -g -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++20 -o CMakeFiles/mila.dir/src/Parser.cpp.o -c /home/stefan/FIT/PJP/slavkste/src/Parser.cpp",
+  "file": "/home/stefan/FIT/PJP/slavkste/src/Parser.cpp"
+},
+{
+  "directory": "/home/stefan/FIT/PJP/slavkste/build",
+  "command": "/usr/bin/c++  -I/home/stefan/FIT/PJP/slavkste/src -I/usr/lib/llvm-14/include -Wall -Wextra -pedantic  -g -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++20 -o CMakeFiles/mila.dir/src/Node.cpp.o -c /home/stefan/FIT/PJP/slavkste/src/Node.cpp",
+  "file": "/home/stefan/FIT/PJP/slavkste/src/Node.cpp"
+},
+{
+  "directory": "/home/stefan/FIT/PJP/slavkste/build",
+  "command": "/usr/bin/c++  -I/home/stefan/FIT/PJP/slavkste/src -I/usr/lib/llvm-14/include -Wall -Wextra -pedantic  -g -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++20 -o CMakeFiles/mila.dir/src/Token.cpp.o -c /home/stefan/FIT/PJP/slavkste/src/Token.cpp",
+  "file": "/home/stefan/FIT/PJP/slavkste/src/Token.cpp"
+}
+]

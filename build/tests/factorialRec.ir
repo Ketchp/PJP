@@ -1,0 +1,45 @@
+; ModuleID = 'factorialRec'
+source_filename = "factorialRec"
+
+@n = common global i32 0
+
+declare i32 @writeln(i32)
+
+declare i32 @readln(i32*)
+
+define i32 @fact(i32 %n) {
+entry:
+  %return_store = alloca i32, align 4
+  %n_store = alloca i32, align 4
+  store i32 %n, i32* %n_store, align 4
+  %load_var = load i32, i32* %n_store, align 4
+  %eq_tmp = icmp eq i32 %load_var, 0
+  %if_cond = icmp ne i1 %eq_tmp, false
+  br i1 %if_cond, label %body, label %else
+
+body:                                             ; preds = %entry
+  store i32 1, i32* %return_store, align 4
+  br label %after
+
+else:                                             ; preds = %entry
+  %load_var1 = load i32, i32* %n_store, align 4
+  %load_var2 = load i32, i32* %n_store, align 4
+  %sub_tmp = sub i32 %load_var2, 1
+  %call_tmp = call i32 @fact(i32 %sub_tmp)
+  %mul_tmp = mul i32 %load_var1, %call_tmp
+  store i32 %mul_tmp, i32* %return_store, align 4
+  br label %after
+
+after:                                            ; preds = %else, %body
+  %return_value = load i32, i32* %return_store, align 4
+  ret i32 %return_value
+}
+
+define i32 @main() {
+entry:
+  %call_tmp = call i32 @readln(i32* @n)
+  %load_global = load i32, i32* @n, align 4
+  %call_tmp1 = call i32 @fact(i32 %load_global)
+  %call_tmp2 = call i32 @writeln(i32 %call_tmp1)
+  ret i32 0
+}

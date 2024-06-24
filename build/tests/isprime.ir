@@ -1,0 +1,150 @@
+; ModuleID = 'isprime'
+source_filename = "isprime"
+
+declare i32 @writeln(i32)
+
+declare i32 @readln(i32*)
+
+define i32 @isprime(i32 %n) {
+entry:
+  %return_store = alloca i32, align 4
+  %i_store = alloca i32, align 4
+  %n_store = alloca i32, align 4
+  store i32 %n, i32* %n_store, align 4
+  %load_var = load i32, i32* %n_store, align 4
+  %lt_tmp = icmp slt i32 %load_var, 2
+  %if_cond = icmp ne i1 %lt_tmp, false
+  br i1 %if_cond, label %body, label %else
+
+body:                                             ; preds = %entry
+  store i32 0, i32* %return_store, align 4
+  %return_value = load i32, i32* %return_store, align 4
+  ret i32 %return_value
+  br label %after
+
+else:                                             ; preds = %entry
+  br label %after
+
+after:                                            ; preds = %else, %body
+  %load_var1 = load i32, i32* %n_store, align 4
+  %lt_tmp2 = icmp slt i32 %load_var1, 4
+  %if_cond3 = icmp ne i1 %lt_tmp2, false
+  br i1 %if_cond3, label %body4, label %else5
+
+body4:                                            ; preds = %after
+  store i32 1, i32* %return_store, align 4
+  %return_value7 = load i32, i32* %return_store, align 4
+  ret i32 %return_value7
+  br label %after6
+
+else5:                                            ; preds = %after
+  br label %after6
+
+after6:                                           ; preds = %else5, %body4
+  %load_var8 = load i32, i32* %n_store, align 4
+  %rem_tmp = urem i32 %load_var8, 2
+  %eq_tmp = icmp eq i32 %rem_tmp, 0
+  %load_var9 = load i32, i32* %n_store, align 4
+  %rem_tmp10 = urem i32 %load_var9, 3
+  %eq_tmp11 = icmp eq i32 %rem_tmp10, 0
+  %or_tmp = or i1 %eq_tmp, %eq_tmp11
+  %if_cond12 = icmp ne i1 %or_tmp, false
+  br i1 %if_cond12, label %body13, label %else14
+
+body13:                                           ; preds = %after6
+  store i32 0, i32* %return_store, align 4
+  %return_value16 = load i32, i32* %return_store, align 4
+  ret i32 %return_value16
+  br label %after15
+
+else14:                                           ; preds = %after6
+  br label %after15
+
+after15:                                          ; preds = %else14, %body13
+  store i32 1, i32* %return_store, align 4
+  store i32 5, i32* %i_store, align 4
+  br label %cond
+
+cond:                                             ; preds = %after30, %after15
+  %load_var19 = load i32, i32* %i_store, align 4
+  %load_var20 = load i32, i32* %n_store, align 4
+  %lt_tmp21 = icmp slt i32 %load_var19, %load_var20
+  %if_cond22 = icmp ne i1 %lt_tmp21, false
+  br i1 %if_cond22, label %body17, label %after18
+
+body17:                                           ; preds = %cond
+  %load_var23 = load i32, i32* %n_store, align 4
+  %load_var24 = load i32, i32* %i_store, align 4
+  %rem_tmp25 = urem i32 %load_var23, %load_var24
+  %eq_tmp26 = icmp eq i32 %rem_tmp25, 0
+  %if_cond27 = icmp ne i1 %eq_tmp26, false
+  br i1 %if_cond27, label %body28, label %else29
+
+after18:                                          ; preds = %cond
+  %return_value33 = load i32, i32* %return_store, align 4
+  ret i32 %return_value33
+
+body28:                                           ; preds = %body17
+  store i32 0, i32* %return_store, align 4
+  %return_value31 = load i32, i32* %return_store, align 4
+  ret i32 %return_value31
+  br label %after30
+
+else29:                                           ; preds = %body17
+  br label %after30
+
+after30:                                          ; preds = %else29, %body28
+  %load_var32 = load i32, i32* %i_store, align 4
+  %add_tmp = add i32 %load_var32, 2
+  store i32 %add_tmp, i32* %i_store, align 4
+  br label %cond
+}
+
+define i32 @main() {
+entry:
+  %call_tmp = call i32 @isprime(i32 0)
+  %call_tmp1 = call i32 @writeln(i32 %call_tmp)
+  %call_tmp2 = call i32 @isprime(i32 1)
+  %call_tmp3 = call i32 @writeln(i32 %call_tmp2)
+  %call_tmp4 = call i32 @isprime(i32 2)
+  %call_tmp5 = call i32 @writeln(i32 %call_tmp4)
+  %call_tmp6 = call i32 @isprime(i32 3)
+  %call_tmp7 = call i32 @writeln(i32 %call_tmp6)
+  %call_tmp8 = call i32 @isprime(i32 4)
+  %call_tmp9 = call i32 @writeln(i32 %call_tmp8)
+  %call_tmp10 = call i32 @isprime(i32 5)
+  %call_tmp11 = call i32 @writeln(i32 %call_tmp10)
+  %call_tmp12 = call i32 @isprime(i32 6)
+  %call_tmp13 = call i32 @writeln(i32 %call_tmp12)
+  %call_tmp14 = call i32 @isprime(i32 7)
+  %call_tmp15 = call i32 @writeln(i32 %call_tmp14)
+  %call_tmp16 = call i32 @isprime(i32 8)
+  %call_tmp17 = call i32 @writeln(i32 %call_tmp16)
+  %call_tmp18 = call i32 @isprime(i32 9)
+  %call_tmp19 = call i32 @writeln(i32 %call_tmp18)
+  %call_tmp20 = call i32 @isprime(i32 10)
+  %call_tmp21 = call i32 @writeln(i32 %call_tmp20)
+  %call_tmp22 = call i32 @isprime(i32 11)
+  %call_tmp23 = call i32 @writeln(i32 %call_tmp22)
+  %call_tmp24 = call i32 @isprime(i32 12)
+  %call_tmp25 = call i32 @writeln(i32 %call_tmp24)
+  %call_tmp26 = call i32 @isprime(i32 13)
+  %call_tmp27 = call i32 @writeln(i32 %call_tmp26)
+  %call_tmp28 = call i32 @isprime(i32 14)
+  %call_tmp29 = call i32 @writeln(i32 %call_tmp28)
+  %call_tmp30 = call i32 @isprime(i32 15)
+  %call_tmp31 = call i32 @writeln(i32 %call_tmp30)
+  %call_tmp32 = call i32 @isprime(i32 16)
+  %call_tmp33 = call i32 @writeln(i32 %call_tmp32)
+  %call_tmp34 = call i32 @isprime(i32 17)
+  %call_tmp35 = call i32 @writeln(i32 %call_tmp34)
+  %call_tmp36 = call i32 @isprime(i32 119)
+  %call_tmp37 = call i32 @writeln(i32 %call_tmp36)
+  %call_tmp38 = call i32 @isprime(i32 187)
+  %call_tmp39 = call i32 @writeln(i32 %call_tmp38)
+  %call_tmp40 = call i32 @isprime(i32 101)
+  %call_tmp41 = call i32 @writeln(i32 %call_tmp40)
+  %call_tmp42 = call i32 @isprime(i32 103)
+  %call_tmp43 = call i32 @writeln(i32 %call_tmp42)
+  ret i32 0
+}

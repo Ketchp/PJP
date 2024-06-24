@@ -1,0 +1,46 @@
+; ModuleID = 'fibonacci'
+source_filename = "fibonacci"
+
+declare i32 @writeln(i32)
+
+declare i32 @readln(i32*)
+
+define i32 @fibonacci(i32 %n) {
+entry:
+  %return_store = alloca i32, align 4
+  %n_store = alloca i32, align 4
+  store i32 %n, i32* %n_store, align 4
+  %load_var = load i32, i32* %n_store, align 4
+  %lt_tmp = icmp slt i32 %load_var, 2
+  %if_cond = icmp ne i1 %lt_tmp, false
+  br i1 %if_cond, label %body, label %else
+
+body:                                             ; preds = %entry
+  %load_var1 = load i32, i32* %n_store, align 4
+  store i32 %load_var1, i32* %return_store, align 4
+  br label %after
+
+else:                                             ; preds = %entry
+  %load_var2 = load i32, i32* %n_store, align 4
+  %sub_tmp = sub i32 %load_var2, 1
+  %call_tmp = call i32 @fibonacci(i32 %sub_tmp)
+  %load_var3 = load i32, i32* %n_store, align 4
+  %sub_tmp4 = sub i32 %load_var3, 2
+  %call_tmp5 = call i32 @fibonacci(i32 %sub_tmp4)
+  %add_tmp = add i32 %call_tmp, %call_tmp5
+  store i32 %add_tmp, i32* %return_store, align 4
+  br label %after
+
+after:                                            ; preds = %else, %body
+  %return_value = load i32, i32* %return_store, align 4
+  ret i32 %return_value
+}
+
+define i32 @main() {
+entry:
+  %call_tmp = call i32 @fibonacci(i32 8)
+  %call_tmp1 = call i32 @writeln(i32 %call_tmp)
+  %call_tmp2 = call i32 @fibonacci(i32 9)
+  %call_tmp3 = call i32 @writeln(i32 %call_tmp2)
+  ret i32 0
+}

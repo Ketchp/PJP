@@ -1,0 +1,71 @@
+; ModuleID = 'indirectrecursion'
+source_filename = "indirectrecursion"
+
+declare i32 @writeln(i32)
+
+declare i32 @readln(i32*)
+
+define i32 @iseven(i32 %n) {
+entry:
+  %return_store = alloca i32, align 4
+  %n_store = alloca i32, align 4
+  store i32 %n, i32* %n_store, align 4
+  %load_var = load i32, i32* %n_store, align 4
+  %gt_tmp = icmp sgt i32 %load_var, 0
+  %if_cond = icmp ne i1 %gt_tmp, false
+  br i1 %if_cond, label %body, label %else
+
+body:                                             ; preds = %entry
+  %load_var1 = load i32, i32* %n_store, align 4
+  %sub_tmp = sub i32 %load_var1, 1
+  %call_tmp = call i32 @isodd(i32 %sub_tmp)
+  store i32 %call_tmp, i32* %return_store, align 4
+  %return_value = load i32, i32* %return_store, align 4
+  ret i32 %return_value
+  br label %after
+
+else:                                             ; preds = %entry
+  br label %after
+
+after:                                            ; preds = %else, %body
+  store i32 1, i32* %return_store, align 4
+  %return_value2 = load i32, i32* %return_store, align 4
+  ret i32 %return_value2
+}
+
+define i32 @isodd(i32 %n) {
+entry:
+  %return_store = alloca i32, align 4
+  %n_store = alloca i32, align 4
+  store i32 %n, i32* %n_store, align 4
+  %load_var = load i32, i32* %n_store, align 4
+  %gt_tmp = icmp sgt i32 %load_var, 0
+  %if_cond = icmp ne i1 %gt_tmp, false
+  br i1 %if_cond, label %body, label %else
+
+body:                                             ; preds = %entry
+  %load_var1 = load i32, i32* %n_store, align 4
+  %sub_tmp = sub i32 %load_var1, 1
+  %call_tmp = call i32 @iseven(i32 %sub_tmp)
+  store i32 %call_tmp, i32* %return_store, align 4
+  %return_value = load i32, i32* %return_store, align 4
+  ret i32 %return_value
+  br label %after
+
+else:                                             ; preds = %entry
+  br label %after
+
+after:                                            ; preds = %else, %body
+  store i32 0, i32* %return_store, align 4
+  %return_value2 = load i32, i32* %return_store, align 4
+  ret i32 %return_value2
+}
+
+define i32 @main() {
+entry:
+  %call_tmp = call i32 @iseven(i32 11)
+  %call_tmp1 = call i32 @writeln(i32 %call_tmp)
+  %call_tmp2 = call i32 @isodd(i32 11)
+  %call_tmp3 = call i32 @writeln(i32 %call_tmp2)
+  ret i32 0
+}

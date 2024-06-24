@@ -1,71 +1,70 @@
-#ifndef PJPPROJECT_LEXER_HPP
-#define PJPPROJECT_LEXER_HPP
+#pragma once
 
-#include <iostream>
+#include "Token.hpp"
 
-class Lexer {
-public:
-    Lexer() = default;
-    ~Lexer() = default;
 
-    int gettok();
-    const std::string& identifierStr() const { return this->m_IdentifierStr; }
-    int numVal() { return this->m_NumVal; }
+struct LexerError: std::exception {
+    explicit LexerError(std::string msg);
+
+    [[nodiscard]] const char * what() const noexcept override;
 private:
-    std::string m_IdentifierStr;
-    int m_NumVal;
+    std::string err;
 };
 
+struct Lexer {
+    [[nodiscard]] Token get_token();
 
-/*
- * Lexer returns tokens [0-255] if it is an unknown character, otherwise one of these for known things.
- * Here are all valid tokens:
+private:
+    const static uint8_t DIGIT_NO = -1;
+    const static uint8_t DIGIT_IDENT = -2;
+    const static uint8_t DIGIT_DOT = -3;
+    const static uint8_t DIGIT_EXP = -4;
+
+    [[nodiscard]] Token parse_number(Pos start, uint8_t base, Mila_int_T number = 0);
+    [[nodiscard]] uint8_t parse_digit(uint8_t base);
+    [[nodiscard]] Token parse_real(Pos start, uint8_t base, Mila_real_T number, bool contains_digit);
+    [[nodiscard]] Token parse_exponent(Pos start, uint8_t base, Mila_real_T number);
+    [[nodiscard]] Token parse_string(Pos start);
+    [[nodiscard]] Token parse_identifier_kw(Pos start, char c);
+    [[nodiscard]] Mila_string_T parse_word(char c);
+    [[nodiscard]] uint8_t parse_byte_num(uint8_t base, uint8_t value = 0);
+
+    [[nodiscard]] static bool is_identifier_char(char c, bool first = false);
+
+    [[nodiscard]] static bool is_oct_digit(char c);
+
+    [[nodiscard]] static uint8_t char_to_digit(char c);
+    [[noreturn]] void throw_error(const std::string &value) const;
+
+    void warn(const std::string &value) const;
+
+    Pos current{1, 0};
+};
+
+/* Valid numbers:
+ * 0
+ * &0  oct
+ * $0  hex
+ * 1240
+ * &476  oct
+ * $4aa  hex
+ *
+ * 0.48154      // real
+ * 0.454e455    // exponent
+ * 0.445e+415   // plus exp
+ * 0.498e-465   // minus exp
+ * 1.e8         // exponent after dot
+ * .1e8         // first dot
+ * 1.000e8      // more zeros after dot
+ * 10e65        // no dot(.)
+ * $0.5         // hex or oct real in any form
+ * $beeepffff   // hex exponent
+ *
+ * Invalid numbers:
+ * 00           // more zeros
+ * $00          // more zeros hex or oct
+ * .            // only dot
+ * .e145        // no number both before and after dot
+ * 165e         // no number after e
  */
-enum Token {
-    tok_eof =           -1,
 
-    // numbers and identifiers
-    tok_identifier =    -2,
-    tok_number =        -3,
-
-    // keywords
-    tok_begin =         -4,
-    tok_end =           -5,
-    tok_const =         -6,
-    tok_procedure =     -7,
-    tok_forward =       -8,
-    tok_function =      -9,
-    tok_if =            -10,
-    tok_then =          -11,
-    tok_else =          -12,
-    tok_program =       -13,
-    tok_while =         -14,
-    tok_exit =          -15,
-    tok_var =           -16,
-    tok_integer =       -17,
-    tok_for =           -18,
-    tok_do =            -19,
-
-    // 2-character operators
-    tok_notequal =      -20,
-    tok_lessequal =     -21,
-    tok_greaterequal =  -22,
-    tok_assign =        -23,
-    tok_or =            -24,
-
-    // 3-character operators (keywords)
-    tok_mod =           -25,
-    tok_div =           -26,
-    tok_not =           -27,
-    tok_and =           -28,
-    tok_xor =           -29,
-
-    // keywords in for loop
-    tok_to =            -30,
-    tok_downto =        -31,
-
-    // keywords for array
-    tok_array =         -32
-};
-
-#endif //PJPPROJECT_LEXER_HPP
