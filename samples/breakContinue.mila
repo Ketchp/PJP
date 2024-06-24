@@ -1,0 +1,59 @@
+program breakContinue;
+
+var I: integer;
+begin
+  write_str('For loop break\n');
+  for I := 0 to 3 do begin
+    writeln(I);
+    if I = 1 then
+        break;
+  end;
+  writeln(I);
+
+  write_str('For loop continue\n');
+  for I := 0 to 3 do begin
+    writeln(I);
+    if I = 1 then
+        continue;
+    writeln(I);
+  end;
+  writeln(I);
+
+  write_str('While loop break\n');
+  I := 0;
+  while I < 5 do
+  begin
+    writeln(I);
+    if I = 1 then
+        break;
+  end;
+  writeln(I);
+
+  write_str('While loop continue\n');
+  I := 0;
+  while I < 5 do
+  begin
+    writeln(I);
+    if I = 1 then
+        continue;
+    writeln(I);
+  end;
+  writeln(I);
+
+  write_str('Nested break/continue\n');
+  I := 1561;
+  while 1 <> 0 do
+  begin
+    writeln(I);
+    while 1 <> 0 do
+    begin
+      if (I mod 2) = 1 then break;
+      I := I div 2;
+      continue;
+    end;
+
+    writeln(I);
+    if I = 1 then break;
+    I := 3 * I + 1;
+  end;
+end.

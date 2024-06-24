@@ -144,6 +144,10 @@ std::ostream &operator<<(std::ostream &os, const Token &token) {
         return os << "downto";
     if(token.type == TokenType::TOK_ARRAY)
         return os << "array";
+    if(token.type == TokenType::TOK_CONTINUE)
+        return os << "continue";
+    if(token.type == TokenType::TOK_BREAK)
+        return os << "break";
     if(token.type == TokenType::TOK_BRACE_L)
         return os << "(";
     if(token.type == TokenType::TOK_BRACE_R)

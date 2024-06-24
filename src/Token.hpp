@@ -74,6 +74,8 @@ enum class TokenType {
     TOK_TO,                    // to
     TOK_DOWNTO,                // downto
     TOK_ARRAY,                 // array
+    TOK_CONTINUE,              // continue
+    TOK_BREAK,                 // break
 
     // braces
     TOK_BRACE_L,               // (

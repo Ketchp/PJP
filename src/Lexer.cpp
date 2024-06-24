@@ -362,6 +362,10 @@ Token Lexer::parse_identifier_kw(Pos start, char c) {
         return {start, TokenType::TOK_DOWNTO};
     if(word == "array")
         return {start, TokenType::TOK_ARRAY};
+    if(word == "continue")
+        return {start, TokenType::TOK_CONTINUE};
+    if(word == "break")
+        return {start, TokenType::TOK_BREAK};
     if(word == "or")
         return {start, TokenType::TOK_OR};
     if(word == "mod")
