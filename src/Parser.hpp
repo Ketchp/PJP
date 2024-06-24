@@ -70,12 +70,6 @@ private:
         return match<false>(accept);
     }
 
-    Token try_match(std::initializer_list<TokenType> accept) {
-        return match<false>(accept);
-    }
-
-    [[nodiscard]] Token peek() const;
-
     [[nodiscard]] bool peek(TokenType accept) const {
         return current_token.type == accept;
     }
@@ -142,7 +136,6 @@ private:
     std::unique_ptr<Expression> parse_L2_();
     std::unique_ptr<Expression> parse_L1();
     std::unique_ptr<Expression> parse_L1_(std::unique_ptr<Expression> lhs);
-    Mila_int_T parse_compile_time_int();
     std::unique_ptr<Type> parse_type();
     std::unique_ptr<Type> parse_trivial_type();
     std::unique_ptr<TypeArray> parse_type_array();

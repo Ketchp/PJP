@@ -9,12 +9,6 @@ Parser::Parser()
 {}
 
 
-
-Token Parser::peek() const {
-    return current_token;
-}
-
-
 template<>
 Token Parser::NO_MATCH<true>() {
     throw_error("todo");
@@ -292,15 +286,6 @@ void Parser::parse_function(Function &function) {
 
     match(TokenType::TOK_SEMICOLON);
 }
-
-Mila_int_T Parser::parse_compile_time_int() {
-    try {
-        return std::get<Mila_int_T>(parse_expression()->simplify()->get_value());
-    } catch (const std::bad_variant_access &) {
-        Parser::throw_error("TODO");
-    }
-}
-
 
 void Parser::parse_implementation(Function &function) {
     match(TokenType::TOK_BEGIN);

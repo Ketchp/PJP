@@ -12,7 +12,6 @@ ParserError::ParserError(std::string msg)
 }
 
 void parser_warning(const std::string &message) {
-    // todo
     std::cerr << "Parser warning: " << message << '\n';
 }
 
@@ -27,7 +26,7 @@ Type::Type(T type)
 
 std::shared_ptr<Type> Type::TypeVoid{};
 std::shared_ptr<Type> Type::TypeInt{};
-std::shared_ptr<Type> Type::TypeReal{};
+//std::shared_ptr<Type> Type::TypeReal{};
 
 std::shared_ptr<Type> Type::VOID() {
     if(!TypeVoid)
@@ -40,13 +39,6 @@ std::shared_ptr<Type> Type::INT() {
         TypeInt = std::make_shared<Type>(Type::T::INT_T);
     return TypeInt;
 }
-
-std::shared_ptr<Type> Type::REAL() {
-    if(!TypeReal)
-        TypeReal = std::make_shared<Type>(Type::T::REAL_T);
-    return TypeReal;
-}
-
 
 std::shared_ptr<Function> SymbolTable::add_function(
         const std::shared_ptr<Function> &function
@@ -74,7 +66,7 @@ void SymbolTable::_check_forward_definition_match(
         const std::shared_ptr<FunctionType> &definition)
 {
     if(!old_declaration->is_function())
-        throw ParserError{"Redefinition of non function TODO"};
+        throw ParserError{"Redefinition of non function."};
 
     auto declaration = std::dynamic_pointer_cast<FunctionType>(old_declaration);
 
@@ -94,7 +86,7 @@ void SymbolTable::_check_forward_definition_match(
             parser_warning("Different parameter name from definition.");
 
         if(*type1 != *type2)
-            throw TypeError{"Redeclaration of function TODO with different types"};
+            throw TypeError{"Redeclaration of function with different types"};
     }
 
     if(*declaration->return_type != *definition->return_type)
@@ -107,10 +99,14 @@ bool Type::operator==(const Type &other) const {
 
     if(type == T::ARRAY_T && other.type == T::ARRAY_T)
         // cast should succeed if Type is correctly constructed
-        // todo maybe check sizes too
+
         try {
-            return dynamic_cast<const TypeArray &>(*this).element_type ==
-                   dynamic_cast<const TypeArray &>(other).element_type;
+            const auto &lhs = dynamic_cast<const TypeArray &>(*this);
+            const auto &rhs = dynamic_cast<const TypeArray &>(other);
+
+            return lhs.element_type == rhs.element_type &&
+                    lhs.array_start == rhs.array_start &&
+                    lhs.array_end == rhs.array_end;
         }
         catch(const std::bad_cast &) {
             return false;
@@ -118,45 +114,3 @@ bool Type::operator==(const Type &other) const {
 
     return type == other.type;
 }
-
-TypeArray::TypeArray(std::shared_ptr<Type> element, Mila_int_T start, Mila_int_T stop)
-    : Type{T::ARRAY_T},
-      element_type{(std::move(element))},
-      array_start{start},
-      array_end{stop}
-{}
-
-Statements::Statements(Statements::statement_vector_T statements)
-    : statements(std::move(statements))
-{}
-
-Statements::Statements(std::unique_ptr<Statement> statement) {
-    statements.emplace_back(std::move(statement));
-}
-
-
-Function::Function(
-        const std::shared_ptr<FunctionType> &function_type
-):
-      function_type{function_type}
-{}
-
-Value LiteralExpression::codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const {
-    return std::visit(overloaded{
-        [](std::monostate) -> Value {throw GeneratorError{"Literal does not contain initial_value."};},
-        [&](Mila_int_T int_value) -> Value {
-            return llvm::ConstantInt::get(
-                    builder.getContext(),
-                    llvm::APInt(Mila_int_T_bits, int_value, Mila_int_T_signed)
-            );
-        },
-        [&](Mila_real_T real_value) -> Value {
-            return llvm::ConstantFP::get(
-                    builder.getContext(),
-                    llvm::APFloat(real_value)
-            );
-        },
-        [](auto) -> Value {throw GeneratorError{"Not implemented."};},
-    }, value);
-}
-

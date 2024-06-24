@@ -156,16 +156,8 @@ struct Type {
         return type == T::REAL_T;
     }
 
-    [[nodiscard]] bool is_string() const {
-        return type == T::STRING_T;
-    }
-
     [[nodiscard]] bool is_numeric() const {
         return is_int() || is_real();
-    }
-
-    [[nodiscard]] bool is_trivial() const {
-        return is_numeric() || is_string();
     }
 
     [[nodiscard]] bool is_array() const {
@@ -201,13 +193,12 @@ struct Type {
 
     static std::shared_ptr<Type> VOID();
     static std::shared_ptr<Type> INT();
-    static std::shared_ptr<Type> REAL();
 
     T type;
 
     static std::shared_ptr<Type> TypeVoid;
     static std::shared_ptr<Type> TypeInt;
-    static std::shared_ptr<Type> TypeReal;
+//    static std::shared_ptr<Type> TypeReal;
 };
 
 
@@ -227,7 +218,7 @@ struct SymbolTable {
 
         std::string identifier;
         std::shared_ptr<Type> type;
-        Symbol_class symbol_class;
+        Symbol_class symbol_class{};
         Mila_variant_T initial_value{};  // for const initial initial_value
         llvm::Value *value = nullptr;
         llvm::AllocaInst *store = nullptr;
@@ -247,7 +238,7 @@ struct SymbolTable {
             std::shared_ptr<Type> type
     ) {
         if(variables.contains(identifier))
-            throw ParserError{"TODO"};
+            throw ParserError{"Redeclaration of variable."};
 
         variables.emplace(identifier, SymbolInfo{
                 .identifier = identifier.identifier,
@@ -275,7 +266,7 @@ struct SymbolTable {
             std::shared_ptr<Type> type
     ) {
         if(variables.contains(identifier))
-            throw ParserError{"TODO"};
+            throw ParserError{"Redeclaration with const."};
 
         variables.emplace(identifier, SymbolInfo{
                 .identifier = identifier.identifier,
@@ -293,8 +284,7 @@ struct SymbolTable {
     void add_return_var(
             const std::shared_ptr<Type> &type
     ) {
-        if(variables.contains(RETURN_VALUE_IDENTIFIER))
-            throw ParserError{"TODO"};
+        assert(!variables.contains(RETURN_VALUE_IDENTIFIER));
 
         variables.emplace(RETURN_VALUE_IDENTIFIER, SymbolInfo{
                 .identifier = RETURN_VALUE_IDENTIFIER.identifier,
@@ -308,7 +298,7 @@ struct SymbolTable {
             const std::shared_ptr<Type> &type
     ) {
         if(variables.contains(identifier))
-            throw ParserError{"TODO"};
+            throw ParserError{"Parameters must have unique names."};
 
         variables.emplace(identifier, SymbolInfo{
                 .identifier = identifier.identifier,
@@ -331,7 +321,16 @@ using SYMBOL_CLASS = SymbolTable::SymbolInfo::Symbol_class;
 
 
 struct TypeArray: public Type {
-    TypeArray(std::shared_ptr<Type> element, Mila_int_T start, Mila_int_T stop);
+    TypeArray(
+            std::shared_ptr<Type> element,
+            Mila_int_T start,
+            Mila_int_T stop
+    ) : Type{T::ARRAY_T},
+        element_type{(std::move(element))},
+        array_start{start},
+        array_end{stop}
+    {}
+
 
     [[nodiscard]] llvm::Type *typegen(llvm::IRBuilder<> &builder) const override {
         return typegen_array(builder);
@@ -357,7 +356,7 @@ struct Statement {
     virtual llvm::Value *get_address(llvm::IRBuilder<> &, const llvm::Module &) const {
         throw GeneratorError{"Get address not supported on this stmt"};
     }
-    [[nodiscard]] virtual llvm::Value *get_store(llvm::IRBuilder<> &builder, const llvm::Module &module) const {
+    [[nodiscard]] virtual llvm::Value *get_store(llvm::IRBuilder<> &, const llvm::Module &) const {
         throw GeneratorError{"No AllocaInst."};
     };
 };
@@ -366,8 +365,13 @@ struct Statement {
 struct Statements: public Statement {
     using statement_vector_T = std::vector<std::unique_ptr<Statement>>;
 
-    explicit Statements(statement_vector_T statements);
-    explicit Statements(std::unique_ptr<Statement> statement);
+    explicit Statements(statement_vector_T statements)
+        : statements(std::move(statements))
+    {}
+
+    explicit Statements(std::unique_ptr<Statement> statement) {
+        statements.emplace_back(std::move(statement));
+    }
 
     llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
         for(const auto &statement: statements)
@@ -443,7 +447,8 @@ struct FunctionType: public Type {
 struct Function {
     explicit Function(
         const std::shared_ptr<FunctionType> &function_type
-    );
+    ) : function_type{function_type}
+    {}
 
     Function(
             const std::shared_ptr<Type> &return_type,
@@ -513,8 +518,6 @@ struct Function {
 };
 
 struct Expression: public Statement {
-    [[nodiscard]] virtual std::unique_ptr<Expression> simplify() const = 0;
-    [[nodiscard]] virtual std::unique_ptr<Expression> get_copy() const = 0;
     [[nodiscard]] virtual Mila_variant_T get_value() const = 0;
     [[nodiscard]] virtual std::shared_ptr<Type> get_type() const = 0;
 
@@ -531,14 +534,6 @@ struct LiteralExpression: public Expression {
         : value{(std::move(token.data))}
     {}
 
-    [[nodiscard]] std::unique_ptr<Expression> simplify() const override {
-        return get_copy(); // todo
-    };
-
-    [[nodiscard]] std::unique_ptr<Expression> get_copy() const override {
-        return std::make_unique<LiteralExpression>(value);
-    }
-
     [[nodiscard]] Mila_variant_T get_value() const override {
         return value;
     }
@@ -547,7 +542,24 @@ struct LiteralExpression: public Expression {
         return std::make_shared<Type>(*Type::from_value(value));
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &, const llvm::Module &) const override;
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &) const override {
+        return std::visit(overloaded{
+                [](std::monostate) -> Value {throw GeneratorError{"Literal does not contain initial_value."};},
+                [&](Mila_int_T int_value) -> Value {
+                    return llvm::ConstantInt::get(
+                            builder.getContext(),
+                            llvm::APInt(Mila_int_T_bits, int_value, Mila_int_T_signed)
+                    );
+                },
+                [&](Mila_real_T real_value) -> Value {
+                    return llvm::ConstantFP::get(
+                            builder.getContext(),
+                            llvm::APFloat(real_value)
+                    );
+                },
+                [](auto) -> Value {throw GeneratorError{"Not implemented."};},
+        }, value);
+    }
 
     Mila_variant_T value;
 };
@@ -570,23 +582,17 @@ struct IdentifierExpression: public Expression {
         throw ParserError{"Unknown symbol: " + identifier.identifier};
     }
 
-    [[nodiscard]] std::unique_ptr<Expression> simplify() const override {
-        return get_copy(); // todo
-    }
-
-    [[nodiscard]] std::unique_ptr<Expression> get_copy() const override {
-        return std::make_unique<IdentifierExpression>(*this);
-    }
-
     [[nodiscard]] Mila_variant_T get_value() const override {
-        return {};  // todo
+        if(return_info)
+            return return_info->initial_value;
+        return identifier_info->initial_value;
     }
 
     [[nodiscard]] std::shared_ptr<Type> get_type() const override {
         return identifier_info->type;
     }
 
-    [[nodiscard]] llvm::Value *get_store(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *get_store(llvm::IRBuilder<> &, const llvm::Module &) const override {
         if(identifier_info->symbol_class == SYMBOL_CLASS::CONST)
             throw GeneratorError{"Can not store to CONST"};
         if(identifier_info->symbol_class == SYMBOL_CLASS::FUNCTION)
@@ -597,8 +603,9 @@ struct IdentifierExpression: public Expression {
         return identifier_info->global_variable;
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &) const override {
         switch (identifier_info->symbol_class) {
+            case SYMBOL_CLASS::RETURN_VALUE:
             case SYMBOL_CLASS::PARAM:
             case SYMBOL_CLASS::VAR:
                 if(identifier_info->type->is_array()) {
@@ -628,8 +635,6 @@ struct IdentifierExpression: public Expression {
                                           "load_var");
             case SYMBOL_CLASS::CONST:
                 return identifier_info->value;
-            case SYMBOL_CLASS::RETURN_VALUE:
-                throw GeneratorError{"Not implemented"};  // todo
             case SYMBOL_CLASS::FUNCTION:
                 return builder.CreateLoad(return_info->type->typegen_trivial(builder),
                                           return_info->store,
@@ -673,19 +678,24 @@ struct UnaryExpression: public Expression {
             throw ParserError{"Can not use not on real number."};  // maybe, add implicit conversion
         }
 
-        throw TypeError{"TODO"};
-    }
-
-    [[nodiscard]] std::unique_ptr<Expression> simplify() const override {
-        return get_copy(); // todo
-    }
-
-    [[nodiscard]] std::unique_ptr<Expression> get_copy() const override {
-        return std::make_unique<UnaryExpression<OPERATION>>(child->get_copy());
+        throw TypeError{"Unary operation with wrong type."};
     }
 
     [[nodiscard]] Mila_variant_T get_value() const override {
-        return {};  // todo
+        if constexpr(OPERATION == UnaryOp::PLUS)
+            return child->get_value();
+        if constexpr (OPERATION == UnaryOp::MINUS)
+            return std::visit(overloaded{
+                    [](std::monostate) -> MvT { return {}; },
+                    [](Mila_int_T v) -> MvT {return -v;},
+                    [](Mila_real_T v) -> MvT {return -v;},
+                    [](auto) -> MvT {throw GeneratorError{"Operation not supported."};},
+            }, child->get_value());
+        return std::visit(overloaded{
+            [](std::monostate) -> MvT { return {}; },
+            [](Mila_int_T v) -> MvT {return !v;},
+            [](auto) -> MvT {throw GeneratorError{"Operation not supported."};},
+        }, child->get_value());
     }
 
     [[nodiscard]] std::shared_ptr<Type> get_type() const override {
@@ -740,14 +750,6 @@ struct CastExpression: public Expression {
         child{std::move(expression)}
     {}
 
-    [[nodiscard]] std::unique_ptr<Expression> simplify() const override {
-        return get_copy(); // todo
-    }
-
-    [[nodiscard]] std::unique_ptr<Expression> get_copy() const override {
-        return std::make_unique<CastExpression>(type, child->get_copy());
-    }
-
     [[nodiscard]] Mila_variant_T get_value() const override {
         return {};  // todo
     }
@@ -756,7 +758,7 @@ struct CastExpression: public Expression {
         return type;
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &, const llvm::Module &) const override {
         // todo
         return nullptr;
     }
@@ -840,18 +842,122 @@ struct BinaryExpression: public Expression {
             throw ParserError{"TODO"};  // unreachable
     }
 
-    [[nodiscard]] std::unique_ptr<Expression> simplify() const override {
-        return get_copy(); // todo
-    }
-    [[nodiscard]] std::unique_ptr<Expression> get_copy() const override {
-        return std::make_unique<BinaryExpression<OPERATION>>(
-                lhs->get_copy(),
-                rhs->get_copy()
-        );
-    }
-
     [[nodiscard]] Mila_variant_T get_value() const override {
-        return {};  // todo
+        /* template
+         *
+         return std::visit(overloaded{
+              [](std::monostate) -> MvT { return {}; },
+              []() -> MvT {},
+              [](auto) -> MvT { throw GeneratorError{"Bad type"}; },
+         }, lhs->get_value());
+         *
+         */
+        if constexpr(OPERATION == BinaryOp::ASSIGN) {
+            throw GeneratorError{"Get value not supported for assignment operation."};
+        }
+        if constexpr(OPERATION == BinaryOp::SUBSCRIPT) {
+            throw GeneratorError{"Get value not supported for subscript operation."};
+        }
+        if constexpr(OPERATION == BinaryOp::OR) {
+            return std::visit(overloaded{
+                    [](std::monostate) -> MvT { return {}; },
+                    [&](Mila_int_T v) -> MvT { return v || std::get<Mila_int_T>(rhs->get_value());},
+                    [](auto) -> MvT { throw GeneratorError{"Bad type"}; },
+            }, lhs->get_value());
+        }
+        if constexpr(OPERATION == BinaryOp::AND) {
+            return std::visit(overloaded{
+                    [](std::monostate) -> MvT { return {}; },
+                    [&](Mila_int_T v) -> MvT { return v && std::get<Mila_int_T>(rhs->get_value());},
+                    [](auto) -> MvT { throw GeneratorError{"Bad type"}; },
+            }, lhs->get_value());
+        }
+        if constexpr(OPERATION == BinaryOp::EQUAL) {
+            return std::visit(overloaded{
+                    [](std::monostate) -> MvT { return {}; },
+                    [&](Mila_int_T v) -> MvT { return v == std::get<Mila_int_T>(rhs->get_value());},
+                    [](auto) -> MvT { throw GeneratorError{"Bad type"}; },
+            }, lhs->get_value());
+        }
+        if constexpr(OPERATION == BinaryOp::NOT_EQUAL) {
+            return std::visit(overloaded{
+                    [](std::monostate) -> MvT { return {}; },
+                    [&](Mila_int_T v) -> MvT { return v != std::get<Mila_int_T>(rhs->get_value());},
+                    [](auto) -> MvT { throw GeneratorError{"Bad type"}; },
+            }, lhs->get_value());
+        }
+        if constexpr(OPERATION == BinaryOp::LESS) {
+            return std::visit(overloaded{
+                    [](std::monostate) -> MvT { return {}; },
+                    [&](Mila_int_T v) -> MvT { return v < std::get<Mila_int_T>(rhs->get_value());},
+                    [&](Mila_real_T v) -> MvT { return v < std::get<Mila_real_T>(rhs->get_value());},
+                    [](auto) -> MvT { throw GeneratorError{"Bad type"}; },
+            }, lhs->get_value());
+        }
+        if constexpr(OPERATION == BinaryOp::LESS_EQUAL) {
+            return std::visit(overloaded{
+                    [](std::monostate) -> MvT { return {}; },
+                    [&](Mila_int_T v) -> MvT { return v <= std::get<Mila_int_T>(rhs->get_value());},
+                    [&](Mila_real_T v) -> MvT { return v <= std::get<Mila_real_T>(rhs->get_value());},
+                    [](auto) -> MvT { throw GeneratorError{"Bad type"}; },
+            }, lhs->get_value());
+        }
+        if constexpr(OPERATION == BinaryOp::GREATER) {
+            return std::visit(overloaded{
+                    [](std::monostate) -> MvT { return {}; },
+                    [&](Mila_int_T v) -> MvT { return v > std::get<Mila_int_T>(rhs->get_value());},
+                    [&](Mila_real_T v) -> MvT { return v > std::get<Mila_real_T>(rhs->get_value());},
+                    [](auto) -> MvT { throw GeneratorError{"Bad type"}; },
+            }, lhs->get_value());
+        }
+        if constexpr(OPERATION == BinaryOp::GREATER_EQUAL) {
+            return std::visit(overloaded{
+                    [](std::monostate) -> MvT { return {}; },
+                    [&](Mila_int_T v) -> MvT { return v >= std::get<Mila_int_T>(rhs->get_value());},
+                    [&](Mila_real_T v) -> MvT { return v >= std::get<Mila_real_T>(rhs->get_value());},
+                    [](auto) -> MvT { throw GeneratorError{"Bad type"}; },
+            }, lhs->get_value());
+        }
+        if constexpr(OPERATION == BinaryOp::PLUS) {
+            return std::visit(overloaded{
+                    [](std::monostate) -> MvT { return {}; },
+                    [&](Mila_int_T v) -> MvT { return v + std::get<Mila_int_T>(rhs->get_value());},
+                    [&](Mila_real_T v) -> MvT { return v + std::get<Mila_real_T>(rhs->get_value());},
+                    [](auto) -> MvT { throw GeneratorError{"Bad type"}; },
+            }, lhs->get_value());
+        }
+        if constexpr(OPERATION == BinaryOp::MINUS) {
+            return std::visit(overloaded{
+                    [](std::monostate) -> MvT { return {}; },
+                    [&](Mila_int_T v) -> MvT { return v - std::get<Mila_int_T>(rhs->get_value());},
+                    [&](Mila_real_T v) -> MvT { return v - std::get<Mila_real_T>(rhs->get_value());},
+                    [](auto) -> MvT { throw GeneratorError{"Bad type"}; },
+            }, lhs->get_value());
+        }
+        if constexpr(OPERATION == BinaryOp::STAR) {
+            return std::visit(overloaded{
+                    [](std::monostate) -> MvT { return {}; },
+                    [&](Mila_int_T v) -> MvT { return v * std::get<Mila_int_T>(rhs->get_value());},
+                    [&](Mila_real_T v) -> MvT { return v * std::get<Mila_real_T>(rhs->get_value());},
+                    [](auto) -> MvT { throw GeneratorError{"Bad type"}; },
+            }, lhs->get_value());
+        }
+        if constexpr(OPERATION == BinaryOp::DIV) {
+            return std::visit(overloaded{
+                    [](std::monostate) -> MvT { return {}; },
+                    [&](Mila_int_T v) -> MvT { return v / std::get<Mila_int_T>(rhs->get_value());},
+                    [&](Mila_real_T v) -> MvT { return v / std::get<Mila_real_T>(rhs->get_value());},
+                    [](auto) -> MvT { throw GeneratorError{"Bad type"}; },
+            }, lhs->get_value());
+        }
+        if constexpr(OPERATION == BinaryOp::MOD) {
+            return std::visit(overloaded{
+                    [](std::monostate) -> MvT { return {}; },
+                    [&](Mila_int_T v) -> MvT { return v % std::get<Mila_int_T>(rhs->get_value());},
+                    [](auto) -> MvT { throw GeneratorError{"Bad type"}; },
+            }, lhs->get_value());
+        }
+        throw GeneratorError{"Get value not supported for operation."};
     }
     [[nodiscard]] std::shared_ptr<Type> get_type() const override {
         if constexpr (
@@ -1039,22 +1145,8 @@ struct CallExpression: public Expression {
 
     }
 
-    [[nodiscard]] std::unique_ptr<Expression> simplify() const override {
-        return get_copy(); // todo
-    }
-
-    [[nodiscard]] std::unique_ptr<Expression> get_copy() const override {
-        decltype(arguments) arg_copy;
-        arg_copy.reserve(arguments.size());
-
-        for(const auto &elem: arguments)
-            arg_copy.emplace_back(elem->get_copy());
-
-        return std::make_unique<CallExpression>(function, std::move(arg_copy));
-    }
-
     [[nodiscard]] Mila_variant_T get_value() const override {
-        return {};  // todo
+        throw GeneratorError{"get_value not supported for compile time call."};
     }
 
     [[nodiscard]] std::shared_ptr<Type> get_type() const override {
@@ -1303,7 +1395,7 @@ struct ExitStatement: public Statement {
         : return_info{info}
     {}
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &) const override {
         if(return_info) {
             auto return_value = builder.CreateLoad(
                     return_info->type->typegen_trivial(builder),

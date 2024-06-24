@@ -1,17 +1,17 @@
-Start testing: Jun 24 12:25 CEST
+Start testing: Jun 24 13:18 CEST
 ----------------------------------------------------------
 1/41 Testing: compiler:arrayMax
 1/41 Test: compiler:arrayMax
 Command: "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/arrayMax.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/arrayMax"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"compiler:arrayMax" start time: Jun 24 12:25 CEST
+"compiler:arrayMax" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.15 sec
 ----------------------------------------------------------
 Test Passed.
-"compiler:arrayMax" end time: Jun 24 12:25 CEST
+"compiler:arrayMax" end time: Jun 24 13:18 CEST
 "compiler:arrayMax" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -19,14 +19,14 @@ Test Passed.
 2/41 Test: compiler:arrayTest
 Command: "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/arrayTest.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/arrayTest"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"compiler:arrayTest" start time: Jun 24 12:25 CEST
+"compiler:arrayTest" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.15 sec
 ----------------------------------------------------------
 Test Passed.
-"compiler:arrayTest" end time: Jun 24 12:25 CEST
+"compiler:arrayTest" end time: Jun 24 13:18 CEST
 "compiler:arrayTest" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -34,14 +34,14 @@ Test Passed.
 3/41 Test: compiler:consts
 Command: "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/consts.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/consts"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"compiler:consts" start time: Jun 24 12:25 CEST
+"compiler:consts" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.14 sec
 ----------------------------------------------------------
 Test Passed.
-"compiler:consts" end time: Jun 24 12:25 CEST
+"compiler:consts" end time: Jun 24 13:18 CEST
 "compiler:consts" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -49,14 +49,14 @@ Test Passed.
 4/41 Test: compiler:expressions
 Command: "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/expressions.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/expressions"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"compiler:expressions" start time: Jun 24 12:25 CEST
+"compiler:expressions" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.14 sec
 ----------------------------------------------------------
 Test Passed.
-"compiler:expressions" end time: Jun 24 12:25 CEST
+"compiler:expressions" end time: Jun 24 13:18 CEST
 "compiler:expressions" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -64,14 +64,14 @@ Test Passed.
 5/41 Test: compiler:expressions2
 Command: "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/expressions2.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/expressions2"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"compiler:expressions2" start time: Jun 24 12:25 CEST
+"compiler:expressions2" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
-Test time =   0.15 sec
+Test time =   0.14 sec
 ----------------------------------------------------------
 Test Passed.
-"compiler:expressions2" end time: Jun 24 12:25 CEST
+"compiler:expressions2" end time: Jun 24 13:18 CEST
 "compiler:expressions2" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -79,14 +79,14 @@ Test Passed.
 6/41 Test: compiler:factorial
 Command: "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/factorial.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/factorial"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"compiler:factorial" start time: Jun 24 12:25 CEST
+"compiler:factorial" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.15 sec
 ----------------------------------------------------------
 Test Passed.
-"compiler:factorial" end time: Jun 24 12:25 CEST
+"compiler:factorial" end time: Jun 24 13:18 CEST
 "compiler:factorial" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -94,14 +94,14 @@ Test Passed.
 7/41 Test: compiler:factorialCycle
 Command: "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/factorialCycle.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/factorialCycle"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"compiler:factorialCycle" start time: Jun 24 12:25 CEST
+"compiler:factorialCycle" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
-Test time =   0.15 sec
+Test time =   0.14 sec
 ----------------------------------------------------------
 Test Passed.
-"compiler:factorialCycle" end time: Jun 24 12:25 CEST
+"compiler:factorialCycle" end time: Jun 24 13:18 CEST
 "compiler:factorialCycle" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -109,14 +109,14 @@ Test Passed.
 8/41 Test: compiler:factorialRec
 Command: "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/factorialRec.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/factorialRec"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"compiler:factorialRec" start time: Jun 24 12:25 CEST
+"compiler:factorialRec" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
-Test time =   0.15 sec
+Test time =   0.14 sec
 ----------------------------------------------------------
 Test Passed.
-"compiler:factorialRec" end time: Jun 24 12:25 CEST
+"compiler:factorialRec" end time: Jun 24 13:18 CEST
 "compiler:factorialRec" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -124,7 +124,7 @@ Test Passed.
 9/41 Test: compiler:factorization
 Command: "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/factorization.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/factorization"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"compiler:factorization" start time: Jun 24 12:25 CEST
+"compiler:factorization" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 Unknown symbol: write
@@ -132,10 +132,10 @@ Unknown symbol: write
 (.text+0x1b): undefined reference to `main'
 clang: error: linker command failed with exit code 1 (use -v to see invocation)
 <end of output>
-Test time =   0.15 sec
+Test time =   0.14 sec
 ----------------------------------------------------------
 Test Failed.
-"compiler:factorization" end time: Jun 24 12:25 CEST
+"compiler:factorization" end time: Jun 24 13:18 CEST
 "compiler:factorization" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -143,14 +143,14 @@ Test Failed.
 10/41 Test: compiler:fibonacci
 Command: "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/fibonacci.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/fibonacci"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"compiler:fibonacci" start time: Jun 24 12:25 CEST
+"compiler:fibonacci" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.15 sec
 ----------------------------------------------------------
 Test Passed.
-"compiler:fibonacci" end time: Jun 24 12:25 CEST
+"compiler:fibonacci" end time: Jun 24 13:18 CEST
 "compiler:fibonacci" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -158,14 +158,14 @@ Test Passed.
 11/41 Test: compiler:gcd
 Command: "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/gcd.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/gcd"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"compiler:gcd" start time: Jun 24 12:25 CEST
+"compiler:gcd" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.15 sec
 ----------------------------------------------------------
 Test Passed.
-"compiler:gcd" end time: Jun 24 12:25 CEST
+"compiler:gcd" end time: Jun 24 13:18 CEST
 "compiler:gcd" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -173,14 +173,14 @@ Test Passed.
 12/41 Test: compiler:indirectrecursion
 Command: "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/indirectrecursion.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/indirectrecursion"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"compiler:indirectrecursion" start time: Jun 24 12:25 CEST
+"compiler:indirectrecursion" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
-Test time =   0.15 sec
+Test time =   0.14 sec
 ----------------------------------------------------------
 Test Passed.
-"compiler:indirectrecursion" end time: Jun 24 12:25 CEST
+"compiler:indirectrecursion" end time: Jun 24 13:18 CEST
 "compiler:indirectrecursion" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -188,14 +188,14 @@ Test Passed.
 13/41 Test: compiler:inputOutput
 Command: "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/inputOutput.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/inputOutput"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"compiler:inputOutput" start time: Jun 24 12:25 CEST
+"compiler:inputOutput" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.14 sec
 ----------------------------------------------------------
 Test Passed.
-"compiler:inputOutput" end time: Jun 24 12:25 CEST
+"compiler:inputOutput" end time: Jun 24 13:18 CEST
 "compiler:inputOutput" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -203,14 +203,14 @@ Test Passed.
 14/41 Test: compiler:isprime
 Command: "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/isprime.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/isprime"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"compiler:isprime" start time: Jun 24 12:25 CEST
+"compiler:isprime" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.15 sec
 ----------------------------------------------------------
 Test Passed.
-"compiler:isprime" end time: Jun 24 12:25 CEST
+"compiler:isprime" end time: Jun 24 13:18 CEST
 "compiler:isprime" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -218,14 +218,14 @@ Test Passed.
 15/41 Test: compiler:sortBubble
 Command: "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/sortBubble.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/sortBubble"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"compiler:sortBubble" start time: Jun 24 12:25 CEST
+"compiler:sortBubble" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.15 sec
 ----------------------------------------------------------
 Test Passed.
-"compiler:sortBubble" end time: Jun 24 12:25 CEST
+"compiler:sortBubble" end time: Jun 24 13:18 CEST
 "compiler:sortBubble" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -233,14 +233,14 @@ Test Passed.
 16/41 Test: run:arrayMax.run1.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/arrayMax" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/arrayMax.run1.out" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:arrayMax.run1.out" start time: Jun 24 12:25 CEST
+"run:arrayMax.run1.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:arrayMax.run1.out" end time: Jun 24 12:25 CEST
+"run:arrayMax.run1.out" end time: Jun 24 13:18 CEST
 "run:arrayMax.run1.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -248,14 +248,14 @@ Test Passed.
 17/41 Test: run:arrayTest.run1.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/arrayTest" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/arrayTest.run1.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/arrayTest.run1.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:arrayTest.run1.out" start time: Jun 24 12:25 CEST
+"run:arrayTest.run1.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:arrayTest.run1.out" end time: Jun 24 12:25 CEST
+"run:arrayTest.run1.out" end time: Jun 24 13:18 CEST
 "run:arrayTest.run1.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -263,14 +263,14 @@ Test Passed.
 18/41 Test: run:arrayTest.run2.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/arrayTest" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/arrayTest.run2.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/arrayTest.run2.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:arrayTest.run2.out" start time: Jun 24 12:25 CEST
+"run:arrayTest.run2.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:arrayTest.run2.out" end time: Jun 24 12:25 CEST
+"run:arrayTest.run2.out" end time: Jun 24 13:18 CEST
 "run:arrayTest.run2.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -278,14 +278,14 @@ Test Passed.
 19/41 Test: run:arrayTest.run3.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/arrayTest" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/arrayTest.run3.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/arrayTest.run3.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:arrayTest.run3.out" start time: Jun 24 12:25 CEST
+"run:arrayTest.run3.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:arrayTest.run3.out" end time: Jun 24 12:25 CEST
+"run:arrayTest.run3.out" end time: Jun 24 13:18 CEST
 "run:arrayTest.run3.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -293,14 +293,14 @@ Test Passed.
 20/41 Test: run:arrayTest.run4.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/arrayTest" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/arrayTest.run4.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/arrayTest.run4.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:arrayTest.run4.out" start time: Jun 24 12:25 CEST
+"run:arrayTest.run4.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:arrayTest.run4.out" end time: Jun 24 12:25 CEST
+"run:arrayTest.run4.out" end time: Jun 24 13:18 CEST
 "run:arrayTest.run4.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -308,14 +308,14 @@ Test Passed.
 21/41 Test: run:consts.run1.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/consts" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/consts.run1.out" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:consts.run1.out" start time: Jun 24 12:25 CEST
+"run:consts.run1.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:consts.run1.out" end time: Jun 24 12:25 CEST
+"run:consts.run1.out" end time: Jun 24 13:18 CEST
 "run:consts.run1.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -323,14 +323,14 @@ Test Passed.
 22/41 Test: run:expressions.run1.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/expressions" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/expressions.run1.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/expressions.run1.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:expressions.run1.out" start time: Jun 24 12:25 CEST
+"run:expressions.run1.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:expressions.run1.out" end time: Jun 24 12:25 CEST
+"run:expressions.run1.out" end time: Jun 24 13:18 CEST
 "run:expressions.run1.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -338,14 +338,14 @@ Test Passed.
 23/41 Test: run:expressions.run2.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/expressions" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/expressions.run2.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/expressions.run2.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:expressions.run2.out" start time: Jun 24 12:25 CEST
+"run:expressions.run2.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:expressions.run2.out" end time: Jun 24 12:25 CEST
+"run:expressions.run2.out" end time: Jun 24 13:18 CEST
 "run:expressions.run2.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -353,14 +353,14 @@ Test Passed.
 24/41 Test: run:expressions.run3.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/expressions" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/expressions.run3.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/expressions.run3.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:expressions.run3.out" start time: Jun 24 12:25 CEST
+"run:expressions.run3.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:expressions.run3.out" end time: Jun 24 12:25 CEST
+"run:expressions.run3.out" end time: Jun 24 13:18 CEST
 "run:expressions.run3.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -368,14 +368,14 @@ Test Passed.
 25/41 Test: run:expressions.run4.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/expressions" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/expressions.run4.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/expressions.run4.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:expressions.run4.out" start time: Jun 24 12:25 CEST
+"run:expressions.run4.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:expressions.run4.out" end time: Jun 24 12:25 CEST
+"run:expressions.run4.out" end time: Jun 24 13:18 CEST
 "run:expressions.run4.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -383,14 +383,14 @@ Test Passed.
 26/41 Test: run:expressions2.run1.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/expressions2" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/expressions2.run1.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/expressions2.run1.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:expressions2.run1.out" start time: Jun 24 12:25 CEST
+"run:expressions2.run1.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:expressions2.run1.out" end time: Jun 24 12:25 CEST
+"run:expressions2.run1.out" end time: Jun 24 13:18 CEST
 "run:expressions2.run1.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -398,14 +398,14 @@ Test Passed.
 27/41 Test: run:expressions2.run2.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/expressions2" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/expressions2.run2.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/expressions2.run2.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:expressions2.run2.out" start time: Jun 24 12:25 CEST
+"run:expressions2.run2.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:expressions2.run2.out" end time: Jun 24 12:25 CEST
+"run:expressions2.run2.out" end time: Jun 24 13:18 CEST
 "run:expressions2.run2.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -413,14 +413,14 @@ Test Passed.
 28/41 Test: run:expressions2.run3.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/expressions2" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/expressions2.run3.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/expressions2.run3.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:expressions2.run3.out" start time: Jun 24 12:25 CEST
+"run:expressions2.run3.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:expressions2.run3.out" end time: Jun 24 12:25 CEST
+"run:expressions2.run3.out" end time: Jun 24 13:18 CEST
 "run:expressions2.run3.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -428,14 +428,14 @@ Test Passed.
 29/41 Test: run:factorial.run1.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/factorial" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/factorial.run1.out" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:factorial.run1.out" start time: Jun 24 12:25 CEST
+"run:factorial.run1.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:factorial.run1.out" end time: Jun 24 12:25 CEST
+"run:factorial.run1.out" end time: Jun 24 13:18 CEST
 "run:factorial.run1.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -443,14 +443,14 @@ Test Passed.
 30/41 Test: run:factorialRec.run1.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/factorialRec" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/factorialRec.run1.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/factorialRec.run1.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:factorialRec.run1.out" start time: Jun 24 12:25 CEST
+"run:factorialRec.run1.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:factorialRec.run1.out" end time: Jun 24 12:25 CEST
+"run:factorialRec.run1.out" end time: Jun 24 13:18 CEST
 "run:factorialRec.run1.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -458,14 +458,14 @@ Test Passed.
 31/41 Test: run:factorialRec.run2.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/factorialRec" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/factorialRec.run2.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/factorialRec.run2.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:factorialRec.run2.out" start time: Jun 24 12:25 CEST
+"run:factorialRec.run2.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:factorialRec.run2.out" end time: Jun 24 12:25 CEST
+"run:factorialRec.run2.out" end time: Jun 24 13:18 CEST
 "run:factorialRec.run2.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -473,14 +473,14 @@ Test Passed.
 32/41 Test: run:factorialRec.run3.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/factorialRec" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/factorialRec.run3.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/factorialRec.run3.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:factorialRec.run3.out" start time: Jun 24 12:25 CEST
+"run:factorialRec.run3.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:factorialRec.run3.out" end time: Jun 24 12:25 CEST
+"run:factorialRec.run3.out" end time: Jun 24 13:18 CEST
 "run:factorialRec.run3.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -496,7 +496,7 @@ Output:
 Test time =   0.00 sec
 ----------------------------------------------------------
 Test Passed.
-"run:factorization.run1.out" end time: Jun 24 12:25 CEST
+"run:factorization.run1.out" end time: Jun 24 13:18 CEST
 "run:factorization.run1.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -504,14 +504,14 @@ Test Passed.
 34/41 Test: run:fibonacci.run1.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/fibonacci" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/fibonacci.run1.out" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:fibonacci.run1.out" start time: Jun 24 12:25 CEST
+"run:fibonacci.run1.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:fibonacci.run1.out" end time: Jun 24 12:25 CEST
+"run:fibonacci.run1.out" end time: Jun 24 13:18 CEST
 "run:fibonacci.run1.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -519,14 +519,14 @@ Test Passed.
 35/41 Test: run:gcd.run1.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/gcd" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/gcd.run1.out" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:gcd.run1.out" start time: Jun 24 12:25 CEST
+"run:gcd.run1.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:gcd.run1.out" end time: Jun 24 12:25 CEST
+"run:gcd.run1.out" end time: Jun 24 13:18 CEST
 "run:gcd.run1.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -534,14 +534,14 @@ Test Passed.
 36/41 Test: run:indirectrecursion.run1.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/indirectrecursion" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/indirectrecursion.run1.out" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:indirectrecursion.run1.out" start time: Jun 24 12:25 CEST
+"run:indirectrecursion.run1.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:indirectrecursion.run1.out" end time: Jun 24 12:25 CEST
+"run:indirectrecursion.run1.out" end time: Jun 24 13:18 CEST
 "run:indirectrecursion.run1.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -549,14 +549,14 @@ Test Passed.
 37/41 Test: run:inputOutput.run1.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/inputOutput" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/inputOutput.run1.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/inputOutput.run1.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:inputOutput.run1.out" start time: Jun 24 12:25 CEST
+"run:inputOutput.run1.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:inputOutput.run1.out" end time: Jun 24 12:25 CEST
+"run:inputOutput.run1.out" end time: Jun 24 13:18 CEST
 "run:inputOutput.run1.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -564,14 +564,14 @@ Test Passed.
 38/41 Test: run:inputOutput.run2.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/inputOutput" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/inputOutput.run2.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/inputOutput.run2.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:inputOutput.run2.out" start time: Jun 24 12:25 CEST
+"run:inputOutput.run2.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:inputOutput.run2.out" end time: Jun 24 12:25 CEST
+"run:inputOutput.run2.out" end time: Jun 24 13:18 CEST
 "run:inputOutput.run2.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -579,14 +579,14 @@ Test Passed.
 39/41 Test: run:inputOutput.run3.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/inputOutput" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/inputOutput.run3.out" "-D" "input=/home/stefan/FIT/PJP/slavkste/tests/run/inputOutput.run3.in" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:inputOutput.run3.out" start time: Jun 24 12:25 CEST
+"run:inputOutput.run3.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:inputOutput.run3.out" end time: Jun 24 12:25 CEST
+"run:inputOutput.run3.out" end time: Jun 24 13:18 CEST
 "run:inputOutput.run3.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -594,14 +594,14 @@ Test Passed.
 40/41 Test: run:isprime.run1.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/isprime" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/isprime.run1.out" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:isprime.run1.out" start time: Jun 24 12:25 CEST
+"run:isprime.run1.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:isprime.run1.out" end time: Jun 24 12:25 CEST
+"run:isprime.run1.out" end time: Jun 24 13:18 CEST
 "run:isprime.run1.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
@@ -609,15 +609,15 @@ Test Passed.
 41/41 Test: run:sortBubble.run1.out
 Command: "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/sortBubble" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/sortBubble.run1.out" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake"
 Directory: /home/stefan/FIT/PJP/slavkste/build
-"run:sortBubble.run1.out" start time: Jun 24 12:25 CEST
+"run:sortBubble.run1.out" start time: Jun 24 13:18 CEST
 Output:
 ----------------------------------------------------------
 <end of output>
 Test time =   0.01 sec
 ----------------------------------------------------------
 Test Passed.
-"run:sortBubble.run1.out" end time: Jun 24 12:25 CEST
+"run:sortBubble.run1.out" end time: Jun 24 13:18 CEST
 "run:sortBubble.run1.out" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-End testing: Jun 24 12:25 CEST
+End testing: Jun 24 13:18 CEST
