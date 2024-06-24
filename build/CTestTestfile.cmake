@@ -8,6 +8,8 @@ add_test(compiler:arrayMax "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FI
 set_tests_properties(compiler:arrayMax PROPERTIES  FIXTURES_SETUP "arrayMax" _BACKTRACE_TRIPLES "/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;54;add_test;/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;0;")
 add_test(compiler:arrayTest "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/arrayTest.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/arrayTest")
 set_tests_properties(compiler:arrayTest PROPERTIES  FIXTURES_SETUP "arrayTest" _BACKTRACE_TRIPLES "/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;54;add_test;/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;0;")
+add_test(compiler:breakContinue "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/breakContinue.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/breakContinue")
+set_tests_properties(compiler:breakContinue PROPERTIES  FIXTURES_SETUP "breakContinue" _BACKTRACE_TRIPLES "/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;54;add_test;/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;0;")
 add_test(compiler:consts "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/consts.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/consts")
 set_tests_properties(compiler:consts PROPERTIES  FIXTURES_SETUP "consts" _BACKTRACE_TRIPLES "/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;54;add_test;/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;0;")
 add_test(compiler:expressions "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/expressions.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/expressions")

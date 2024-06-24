@@ -1,1 +1,10 @@
-15:compiler:lexerTest
+1:compiler:arrayMax
+2:compiler:arrayTest
+3:compiler:breakContinue
+17:compiler:sortBubble
+18:run:arrayMax.run1.out
+19:run:arrayTest.run1.out
+20:run:arrayTest.run2.out
+21:run:arrayTest.run3.out
+22:run:arrayTest.run4.out
+43:run:sortBubble.run1.out

@@ -44,6 +44,8 @@ namespace first {
             TokenType::TOK_LITERAL_REAL,
             TokenType::TOK_LITERAL_STRING,
             TokenType::TOK_EXIT,
+            TokenType::TOK_CONTINUE,
+            TokenType::TOK_BREAK,
     };
 
     constexpr auto Expression = {

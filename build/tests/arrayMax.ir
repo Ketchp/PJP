@@ -43,56 +43,62 @@ body:                                             ; preds = %inc, %entry
   %elem_ptr = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %load_global1
   %dereference = load i32, i32* %elem_ptr, align 4
   %call_tmp = call i32 @writeln(i32 %dereference)
+  br label %stop
+
+stop:                                             ; preds = %body
   %iter_value = load i32, i32* @I, align 4
   %stop_cond = icmp eq i32 %iter_value, 20
   br i1 %stop_cond, label %after, label %inc
 
-inc:                                              ; preds = %body
+inc:                                              ; preds = %stop
   %iter_value2 = load i32, i32* @I, align 4
   %step = add i32 %iter_value2, 1
   store i32 %step, i32* @I, align 4
   br label %body
 
-after:                                            ; preds = %body
+after:                                            ; preds = %stop
   %dereference3 = load i32, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 0), align 4
   store i32 %dereference3, i32* @MAX, align 4
   store i32 1, i32* @I, align 4
   br label %body4
 
-body4:                                            ; preds = %inc5, %after
-  %load_global7 = load i32, i32* @MAX, align 4
-  %load_global8 = load i32, i32* @I, align 4
+body4:                                            ; preds = %inc6, %after
+  %load_global8 = load i32, i32* @MAX, align 4
   %load_global9 = load i32, i32* @I, align 4
-  %elem_ptr10 = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %load_global9
-  %dereference11 = load i32, i32* %elem_ptr10, align 4
-  %lt_tmp = icmp slt i32 %load_global7, %dereference11
+  %load_global10 = load i32, i32* @I, align 4
+  %elem_ptr11 = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %load_global10
+  %dereference12 = load i32, i32* %elem_ptr11, align 4
+  %lt_tmp = icmp slt i32 %load_global8, %dereference12
   %if_cond = icmp ne i1 %lt_tmp, false
-  br i1 %if_cond, label %body12, label %else
+  br i1 %if_cond, label %body13, label %else
 
-inc5:                                             ; preds = %after13
-  %iter_value20 = load i32, i32* @I, align 4
-  %step21 = add i32 %iter_value20, 1
-  store i32 %step21, i32* @I, align 4
+stop5:                                            ; preds = %after14
+  %iter_value19 = load i32, i32* @I, align 4
+  %stop_cond20 = icmp eq i32 %iter_value19, 20
+  br i1 %stop_cond20, label %after7, label %inc6
+
+inc6:                                             ; preds = %stop5
+  %iter_value21 = load i32, i32* @I, align 4
+  %step22 = add i32 %iter_value21, 1
+  store i32 %step22, i32* @I, align 4
   br label %body4
 
-after6:                                           ; preds = %after13
-  %load_global22 = load i32, i32* @MAX, align 4
-  %call_tmp23 = call i32 @writeln(i32 %load_global22)
+after7:                                           ; preds = %stop5
+  %load_global23 = load i32, i32* @MAX, align 4
+  %call_tmp24 = call i32 @writeln(i32 %load_global23)
   ret i32 0
 
-body12:                                           ; preds = %body4
-  %load_global14 = load i32, i32* @I, align 4
+body13:                                           ; preds = %body4
   %load_global15 = load i32, i32* @I, align 4
-  %elem_ptr16 = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %load_global15
-  %dereference17 = load i32, i32* %elem_ptr16, align 4
-  store i32 %dereference17, i32* @MAX, align 4
-  br label %after13
+  %load_global16 = load i32, i32* @I, align 4
+  %elem_ptr17 = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %load_global16
+  %dereference18 = load i32, i32* %elem_ptr17, align 4
+  store i32 %dereference18, i32* @MAX, align 4
+  br label %after14
 
 else:                                             ; preds = %body4
-  br label %after13
+  br label %after14
 
-after13:                                          ; preds = %else, %body12
-  %iter_value18 = load i32, i32* @I, align 4
-  %stop_cond19 = icmp eq i32 %iter_value18, 20
-  br i1 %stop_cond19, label %after6, label %inc5
+after14:                                          ; preds = %else, %body13
+  br label %stop5
 }

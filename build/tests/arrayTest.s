@@ -27,10 +27,10 @@ main:                                   # @main
 .LBB0_1:                                # %body
                                         # =>This Inner Loop Header: Depth=1
 	movl	(%rbx), %eax
-	leal	20(%rax), %ecx
-	movslq	%ecx, %rcx
-	movl	$0, (%r12,%rcx,4)
-	cmpl	$20, %eax
+	addl	$20, %eax
+	cltq
+	movl	$0, (%r12,%rax,4)
+	cmpl	$20, (%rbx)
 	je	.LBB0_3
 # %bb.2:                                # %inc
                                         #   in Loop: Header=BB0_1 Depth=1
@@ -55,30 +55,29 @@ main:                                   # @main
 	decl	%eax
 	cmpl	%eax, (%rbx)
 	je	.LBB0_6
-# %bb.5:                                # %inc3
+# %bb.5:                                # %inc4
                                         #   in Loop: Header=BB0_4 Depth=1
 	incl	(%rbx)
 	jmp	.LBB0_4
-.LBB0_6:                                # %after4
+.LBB0_6:                                # %after5
 	movq	SUM@GOTPCREL(%rip), %rax
 	movl	$0, (%rax)
 	movl	$20, (%rbx)
 	.p2align	4, 0x90
-.LBB0_7:                                # %body18
+.LBB0_7:                                # %body19
                                         # =>This Inner Loop Header: Depth=1
 	movl	(%rbx), %ecx
 	leal	20(%rcx), %edx
 	movslq	%edx, %rdx
-	movl	(%r12,%rdx,4), %edx
-	imull	%ecx, %edx
-	addl	%edx, (%rax)
-	cmpl	$-20, %ecx
+	imull	(%r12,%rdx,4), %ecx
+	addl	%ecx, (%rax)
+	cmpl	$-20, (%rbx)
 	je	.LBB0_9
-# %bb.8:                                # %inc19
+# %bb.8:                                # %inc21
                                         #   in Loop: Header=BB0_7 Depth=1
 	decl	(%rbx)
 	jmp	.LBB0_7
-.LBB0_9:                                # %after20
+.LBB0_9:                                # %after22
 	movl	(%rax), %eax
 	cltd
 	idivl	(%r14)

@@ -6,7 +6,9 @@ begin
   for I := 0 to 3 do begin
     writeln(I);
     if I = 1 then
+    begin
         break;
+    end;
   end;
   writeln(I);
 
@@ -14,7 +16,9 @@ begin
   for I := 0 to 3 do begin
     writeln(I);
     if I = 1 then
+    begin
         continue;
+    end;
     writeln(I);
   end;
   writeln(I);
@@ -25,7 +29,9 @@ begin
   begin
     writeln(I);
     if I = 1 then
+    begin
         break;
+    end;
   end;
   writeln(I);
 
@@ -35,7 +41,9 @@ begin
   begin
     writeln(I);
     if I = 1 then
+    begin
         continue;
+    end;
     writeln(I);
   end;
   writeln(I);
@@ -47,13 +55,19 @@ begin
     writeln(I);
     while 1 <> 0 do
     begin
-      if (I mod 2) = 1 then break;
+      if (I mod 2) = 1 then
+      begin
+        break;
+      end;
       I := I div 2;
       continue;
     end;
 
     writeln(I);
-    if I = 1 then break;
+    if I = 1 then
+    begin
+      break;
+    end;
     I := 3 * I + 1;
   end;
 end.

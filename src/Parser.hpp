@@ -115,6 +115,8 @@ private:
     std::unique_ptr<ForStatement> parse_for_statement();
     std::unique_ptr<IfStatement> parse_if_statement();
     std::unique_ptr<ExitStatement> parse_exit_statement();
+    std::unique_ptr<ContinueStatement> parse_continue_statement();
+    std::unique_ptr<BreakStatement> parse_break_statement();
     std::unique_ptr<Statements> parse_statements();
     std::unique_ptr<Statements> parse_scope();
     std::unique_ptr<Statement> parse_statement();

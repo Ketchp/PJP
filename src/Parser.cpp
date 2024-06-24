@@ -162,6 +162,16 @@ std::unique_ptr<ExitStatement> Parser::parse_exit_statement() {
     return std::make_unique<ExitStatement>();
 }
 
+std::unique_ptr<ContinueStatement> Parser::parse_continue_statement() {
+    match(TokenType::TOK_CONTINUE);
+    return std::make_unique<ContinueStatement>();
+}
+
+std::unique_ptr<BreakStatement> Parser::parse_break_statement() {
+    match(TokenType::TOK_BREAK);
+    return std::make_unique<BreakStatement>();
+}
+
 
 std::unique_ptr<Statement> Parser::parse_statement() {
     if(peek(TokenType::TOK_WHILE))
@@ -172,6 +182,10 @@ std::unique_ptr<Statement> Parser::parse_statement() {
         return parse_for_statement();
     if(peek(TokenType::TOK_EXIT))
         return parse_exit_statement();
+    if(peek(TokenType::TOK_CONTINUE))
+        return parse_continue_statement();
+    if(peek(TokenType::TOK_BREAK))
+        return parse_break_statement();
     if(peek(first::Expression))
         return parse_expression();
     Parser::throw_error("TODO");
@@ -746,7 +760,10 @@ std::shared_ptr<llvm::Module> Parser::_generate()
         llvm::BasicBlock *BB = llvm::BasicBlock::Create(*mila_context, "entry", MainFunction);
         mila_builder->SetInsertPoint(BB);
 
-        program->implementation->codegen(*mila_builder, *mila_module);
+        {
+            DescentData descent;
+            program->implementation->codegen(*mila_builder, *mila_module, descent);
+        }
 
         // return 0
         mila_builder->CreateRet(llvm::ConstantInt::get(llvm::Type::getInt32Ty(*mila_context), 0));

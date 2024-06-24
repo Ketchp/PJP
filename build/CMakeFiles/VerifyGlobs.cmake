@@ -42,6 +42,7 @@ file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "/home/stefan/FIT/PJP/slavkste
 set(OLD_GLOB
   "/home/stefan/FIT/PJP/slavkste/samples/arrayMax.mila"
   "/home/stefan/FIT/PJP/slavkste/samples/arrayTest.mila"
+  "/home/stefan/FIT/PJP/slavkste/samples/breakContinue.mila"
   "/home/stefan/FIT/PJP/slavkste/samples/consts.mila"
   "/home/stefan/FIT/PJP/slavkste/samples/expressions.mila"
   "/home/stefan/FIT/PJP/slavkste/samples/expressions2.mila"

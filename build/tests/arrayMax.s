@@ -62,20 +62,20 @@ main:                                   # @main
 	movslq	(%rbx), %rdx
 	cmpl	(%r14,%rdx,4), %ecx
 	jge	.LBB0_6
-# %bb.5:                                # %body12
+# %bb.5:                                # %body13
                                         #   in Loop: Header=BB0_4 Depth=1
 	movslq	(%rbx), %rcx
 	movl	(%r14,%rcx,4), %ecx
 	movl	%ecx, (%rax)
-.LBB0_6:                                # %after13
+.LBB0_6:                                # %after14
                                         #   in Loop: Header=BB0_4 Depth=1
 	cmpl	$20, (%rbx)
 	je	.LBB0_8
-# %bb.7:                                # %inc5
+# %bb.7:                                # %inc6
                                         #   in Loop: Header=BB0_4 Depth=1
 	incl	(%rbx)
 	jmp	.LBB0_4
-.LBB0_8:                                # %after6
+.LBB0_8:                                # %after7
 	movl	(%rax), %edi
 	callq	writeln@PLT
 	xorl	%eax, %eax

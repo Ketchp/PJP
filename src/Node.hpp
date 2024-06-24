@@ -354,15 +354,19 @@ struct TypeArray: public Type {
 };
 
 
+struct DescentData {
+    std::vector<std::pair<llvm::BasicBlock *, llvm::BasicBlock *>> continue_break_BBs;
+};
+
 
 
 struct Statement {
     virtual ~Statement() = default;
-    virtual llvm::Value *codegen(llvm::IRBuilder<> &, llvm::Module &) const = 0;
+    virtual llvm::Value *codegen(llvm::IRBuilder<> &, llvm::Module &, DescentData &) const = 0;
     virtual llvm::Value *get_address(llvm::IRBuilder<> &, const llvm::Module &) const {
         throw GeneratorError{"Get address not supported on this stmt"};
     }
-    [[nodiscard]] virtual llvm::Value *get_store(llvm::IRBuilder<> &, llvm::Module &) const {
+    [[nodiscard]] virtual llvm::Value *get_store(llvm::IRBuilder<> &, llvm::Module &, DescentData &) const {
         throw GeneratorError{"No AllocaInst."};
     };
 };
@@ -379,9 +383,9 @@ struct Statements: public Statement {
         statements.emplace_back(std::move(statement));
     }
 
-    llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
+    llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module, DescentData &descent) const override {
         for(const auto &statement: statements)
-            statement->codegen(builder, module);
+            statement->codegen(builder, module, descent);
         return nullptr;
     };
 
@@ -500,7 +504,10 @@ struct Function {
                 builder.CreateStore(sym_info.value, sym_info.store);
         }
 
-        implementation->codegen(builder, module);
+        {
+            DescentData temp;
+            implementation->codegen(builder, module, temp);
+        }
 
         if(function_type->return_type->is_void())
             builder.CreateRetVoid();
@@ -527,7 +534,7 @@ struct Expression: public Statement {
     [[nodiscard]] virtual Mila_variant_T get_value() const = 0;
     [[nodiscard]] virtual std::shared_ptr<Type> get_type() const = 0;
 
-    llvm::Value *codegen(llvm::IRBuilder<> &, llvm::Module &) const override = 0;
+    llvm::Value *codegen(llvm::IRBuilder<> &, llvm::Module &, DescentData &descent) const override = 0;
 };
 
 
@@ -548,7 +555,7 @@ struct LiteralExpression: public Expression {
         return std::make_shared<Type>(*Type::from_value(value));
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module, DescentData &) const override {
         return std::visit(overloaded{
                 [](std::monostate) -> Value {throw GeneratorError{"Literal does not contain initial_value."};},
                 [&](Mila_int_T int_value) -> Value {
@@ -617,7 +624,7 @@ struct IdentifierExpression: public Expression {
         return identifier_info->type;
     }
 
-    [[nodiscard]] llvm::Value *get_store(llvm::IRBuilder<> &, llvm::Module &) const override {
+    [[nodiscard]] llvm::Value *get_store(llvm::IRBuilder<> &, llvm::Module &, DescentData &) const override {
         if(identifier_info->symbol_class == SYMBOL_CLASS::CONST)
             throw GeneratorError{"Can not store to CONST"};
         if(identifier_info->symbol_class == SYMBOL_CLASS::FUNCTION)
@@ -628,7 +635,7 @@ struct IdentifierExpression: public Expression {
         return identifier_info->global_variable;
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &, DescentData &) const override {
         switch (identifier_info->symbol_class) {
             case SYMBOL_CLASS::RETURN_VALUE:
             case SYMBOL_CLASS::PARAM:
@@ -729,21 +736,21 @@ struct UnaryExpression: public Expression {
         return child->get_type();
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module, DescentData &descent) const override {
         if constexpr (OPERATION == UnaryOp::PLUS) {
-            return child->codegen(builder, module);
+            return child->codegen(builder, module, descent);
         }
         if constexpr (OPERATION == UnaryOp::MINUS) {
             auto child_t = child->get_type();
             if(child_t->is_int()) {
                 return builder.CreateSub(
                         llvm::ConstantInt::get(llvm::Type::getInt32Ty(builder.getContext()), 0),
-                        child->codegen(builder, module)
+                        child->codegen(builder, module, descent)
                 );
             } else if(child_t->is_real()) {
                 return builder.CreateFSub(
                         llvm::ConstantFP::get(llvm::Type::getDoubleTy(builder.getContext()), 0),
-                        child->codegen(builder, module)
+                        child->codegen(builder, module, descent)
                 );
             }
         }
@@ -751,7 +758,7 @@ struct UnaryExpression: public Expression {
             if(child->get_type()->is_int())
                 return builder.CreateZExt(
                         builder.CreateICmpNE(
-                            child->codegen(builder, module),
+                                child->codegen(builder, module, descent),
                             llvm::ConstantInt::get(llvm::Type::getInt32Ty(builder.getContext()), 0),
                             "not"
                         ),
@@ -783,7 +790,7 @@ struct CastExpression: public Expression {
         return type;
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &, llvm::Module &) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &, llvm::Module &, DescentData &) const override {
         // todo
         return nullptr;
     }
@@ -1013,18 +1020,18 @@ struct BinaryExpression: public Expression {
         return std::make_shared<Type>(Type::T::UNKNOWN_T);
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module, DescentData &descent) const override {
         if constexpr(OPERATION == BinaryOp::ASSIGN) {
-            auto lhs_store = lhs->get_store(builder, module);
-            auto rhs_code = rhs->codegen(builder, module);
+            auto lhs_store = lhs->get_store(builder, module, descent);
+            auto rhs_code = rhs->codegen(builder, module, descent);
 
             builder.CreateStore(rhs_code, lhs_store);
 
             return rhs_code;
         }
 
-        auto lhs_code = lhs->codegen(builder, module);
-        auto rhs_code = rhs->codegen(builder, module);
+        auto lhs_code = lhs->codegen(builder, module, descent);
+        auto rhs_code = rhs->codegen(builder, module, descent);
         auto lhs_type = lhs->get_type();
         auto rhs_type = rhs->get_type();
 
@@ -1109,17 +1116,17 @@ struct BinaryExpression: public Expression {
         if constexpr(OPERATION == BinaryOp::SUBSCRIPT)
             return builder.CreateLoad(
                     get_type()->typegen_trivial(builder),
-                    get_store(builder, module),
+                    get_store(builder, module, descent),
                     "dereference"
             );
 
         throw GeneratorError{"Operation not supported for type."};
     }
 
-    [[nodiscard]] llvm::Value *get_store(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *get_store(llvm::IRBuilder<> &builder, llvm::Module &module, DescentData &descent) const override {
         if constexpr (OPERATION == BinaryOp::SUBSCRIPT) {
             auto array_type = lhs->get_type()->typegen(builder);
-            auto *idx = rhs->codegen(builder, module);
+            auto *idx = rhs->codegen(builder, module, descent);
 
             auto *lhs_id = dynamic_cast<IdentifierExpression *>(lhs.get());
             auto *lhs_arr = dynamic_cast<TypeArray *>(lhs_id->identifier_info->type.get());
@@ -1140,13 +1147,13 @@ struct BinaryExpression: public Expression {
 
             return builder.CreateGEP(
                     array_type,
-                    lhs->codegen(builder, module),
+                    lhs->codegen(builder, module, descent),
                     indices,
                     "elem_ptr"
             );
         }
         if constexpr (OPERATION == BinaryOp::ASSIGN)
-            return lhs->get_store(builder, module);
+            return lhs->get_store(builder, module, descent);
 
         throw GeneratorError{"get_store not supported for operation."};
     }
@@ -1178,12 +1185,12 @@ struct CallExpression: public Expression {
         return std::dynamic_pointer_cast<FunctionType>(function->get_type())->return_type;
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module, DescentData &descent) const override {
         const auto &fn_name =
                 std::dynamic_pointer_cast<IdentifierExpression>(function)->identifier_info->identifier;
 
         if(fn_name == "dec")
-            return _dec_codegen(builder, module);
+            return _dec_codegen(builder, module, descent);
 
         llvm::Function *fn = module.getFunction(fn_name);
 
@@ -1198,14 +1205,18 @@ struct CallExpression: public Expression {
         }
         else
             for(const auto &arg: arguments)
-                args_code.emplace_back(arg->codegen(builder, module));
+                args_code.emplace_back(arg->codegen(builder, module, descent));
 
         if(fn->getReturnType()->isVoidTy())
             return builder.CreateCall(fn, args_code);
         return builder.CreateCall(fn, args_code, "call_tmp");
     }
 
-    [[nodiscard]] llvm::Value *_dec_codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const {
+    [[nodiscard]] llvm::Value *_dec_codegen(
+            llvm::IRBuilder<> &builder,
+            llvm::Module &module,
+            DescentData &descent
+    ) const {
         if(arguments.size() != 1)
             throw GeneratorError{"Wrong number of arguments."};
 
@@ -1214,9 +1225,9 @@ struct CallExpression: public Expression {
 
         if(argT->is_int()) {
             auto llvmT = argT->typegen_trivial(builder);
-            Value v = builder.CreateLoad(llvmT, arg->get_store(builder, module), "dec_load");
+            Value v = builder.CreateLoad(llvmT, arg->get_store(builder, module, descent), "dec_load");
             v = builder.CreateSub(v, llvm::ConstantInt::get(llvmT, 1), "dec");
-            builder.CreateStore(v, arg->get_store(builder, module), "dec_store");
+            builder.CreateStore(v, arg->get_store(builder, module, descent), "dec_store");
             return nullptr;
         }
         throw GeneratorError{"Function 'dec' supported only for integers."};
@@ -1238,9 +1249,9 @@ struct IfStatement: public Statement {
         body_else{std::move(body_else)}
     {}
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module, DescentData &descent) const override {
         auto &context = builder.getContext();
-        auto condition_code = condition->codegen(builder, module);
+        auto condition_code = condition->codegen(builder, module, descent);
 
         condition_code = builder.CreateICmpNE(
                 condition_code,
@@ -1264,14 +1275,14 @@ struct IfStatement: public Statement {
 
         // Emit then value.
         builder.SetInsertPoint(if_BB);
-        body_if->codegen(builder, module);
+        body_if->codegen(builder, module, descent);
         builder.CreateBr(after_BB);
 
         // Emit else block.
         builder.SetInsertPoint(else_BB);
 
         if(body_else)
-            body_else->codegen(builder, module);
+            body_else->codegen(builder, module, descent);
 
         builder.CreateBr(after_BB);
 
@@ -1294,7 +1305,7 @@ struct WhileStatement: public Statement {
         body{std::move(body)}
     {}
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module, DescentData &descent) const override {
         auto &context = builder.getContext();
         auto *parent = builder.GetInsertBlock()->getParent();
 
@@ -1305,7 +1316,7 @@ struct WhileStatement: public Statement {
         builder.CreateBr(condition_BB);
 
         builder.SetInsertPoint(condition_BB);
-        auto condition_code = condition->codegen(builder, module);
+        auto condition_code = condition->codegen(builder, module, descent);
 
         condition_code = builder.CreateICmpNE(
                 condition_code,
@@ -1321,7 +1332,11 @@ struct WhileStatement: public Statement {
         builder.CreateCondBr(condition_code, body_BB, after_BB);
 
         builder.SetInsertPoint(body_BB);
-        body->codegen(builder, module);
+
+        descent.continue_break_BBs.emplace_back(condition_BB, after_BB);
+        body->codegen(builder, module, descent);
+        descent.continue_break_BBs.pop_back();
+
         builder.CreateBr(condition_BB);
 
         builder.SetInsertPoint(after_BB);
@@ -1346,36 +1361,47 @@ struct ForStatement: public Statement {
         increment{direction == TokenType::TOK_TO}
     {}
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module, DescentData &descent) const override {
         auto &context = builder.getContext();
         auto *parent = builder.GetInsertBlock()->getParent();
 
         auto body_BB = llvm::BasicBlock::Create(context, "body", parent);
+        auto stop_BB = llvm::BasicBlock::Create(context, "stop", parent);
         auto increment_BB = llvm::BasicBlock::Create(context, "inc", parent);
         auto after_BB = llvm::BasicBlock::Create(context, "after", parent);
 
         // for loop start
-        init->codegen(builder, module);
+        init->codegen(builder, module, descent);
 
         // immediately jump to body,
         // body always executed at least once
         builder.CreateBr(body_BB);
 
         auto iter_type = init->get_type()->typegen_trivial(builder);
-        auto iter_store = init->get_store(builder, module);
+        auto iter_store = init->get_store(builder, module, descent);
 
         // build body
         {
             builder.SetInsertPoint(body_BB);
-            body->codegen(builder, module);
 
+            // set targets for continue/break statements
+            descent.continue_break_BBs.emplace_back(stop_BB, after_BB);
+            body->codegen(builder, module, descent);
+            descent.continue_break_BBs.pop_back();
+
+            builder.CreateBr(stop_BB);
+        }
+
+        // checks stop condition
+        {
+            builder.SetInsertPoint(stop_BB);
             auto iter_value = builder.CreateLoad(
                     iter_type,
                     iter_store,
                     "iter_value"
             );
 
-            auto stop_value = stop_condition->codegen(builder, module);
+            auto stop_value = stop_condition->codegen(builder, module, descent);
 
             auto stop = builder.CreateICmpEQ(iter_value, stop_value, "stop_cond");
 
@@ -1420,7 +1446,7 @@ struct ExitStatement: public Statement {
         : return_info{info}
     {}
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &, DescentData &) const override {
         if(return_info) {
             auto return_value = builder.CreateLoad(
                     return_info->type->typegen_trivial(builder),
@@ -1439,6 +1465,37 @@ struct ExitStatement: public Statement {
     SymbolTable::SymbolInfo *return_info;
 };
 
+struct ContinueStatement: public Statement {
+    llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &, DescentData &descent) const override {
+        auto &context = builder.getContext();
+        auto *parent = builder.GetInsertBlock()->getParent();
+
+        auto break_BB = llvm::BasicBlock::Create(context, "after_break", parent);
+
+        builder.CreateBr(descent.continue_break_BBs.back().second);
+
+        builder.SetInsertPoint(break_BB);
+        builder.CreateUnreachable();  // block after break is unreachable
+
+        return nullptr;
+    }
+};
+
+struct BreakStatement: public Statement {
+    llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &, DescentData &descent) const override {
+        auto &context = builder.getContext();
+        auto *parent = builder.GetInsertBlock()->getParent();
+
+        auto continue_BB = llvm::BasicBlock::Create(context, "after_continue", parent);
+
+        builder.CreateBr(descent.continue_break_BBs.back().first);
+
+        builder.SetInsertPoint(continue_BB);
+        builder.CreateUnreachable();  // block after continue is unreachable
+
+        return nullptr;
+    }
+};
 
 struct Mila: public Function {
     explicit Mila(std::string name)
