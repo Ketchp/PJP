@@ -1,12 +1,2 @@
-1:compiler:arrayMax
-2:compiler:arrayTest
 9:compiler:factorization
-15:compiler:sortBubble
-16:run:arrayMax.run1.out
-17:run:arrayTest.run1.out
-18:run:arrayTest.run2.out
-19:run:arrayTest.run3.out
-20:run:arrayTest.run4.out
-27:run:expressions2.run2.out
 33:run:factorization.run1.out
-41:run:sortBubble.run1.out

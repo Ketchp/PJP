@@ -16,8 +16,8 @@ gcdi:                                   # @gcdi
 	movl	-16(%rsp), %ecx
 	movl	%ecx, -8(%rsp)
 	movl	-12(%rsp), %eax
-	xorl	%edx, %edx
-	divl	%ecx
+	cltd
+	idivl	%ecx
 	movl	%edx, -16(%rsp)
 	movl	%ecx, -12(%rsp)
 	cmpl	$0, -16(%rsp)
@@ -41,8 +41,8 @@ gcdr:                                   # @gcdr
 	movl	%edi, %eax
 	movl	%edi, 20(%rsp)
 	movl	%esi, 8(%rsp)
-	xorl	%edx, %edx
-	divl	%esi
+	cltd
+	idivl	%esi
 	movl	%edx, 12(%rsp)
 	testl	%edx, %edx
 	jne	.LBB1_3
@@ -95,12 +95,12 @@ gcdr_guessing_inner:                    # @gcdr_guessing_inner
 	movl	%edi, 16(%rsp)
 	movl	%esi, 12(%rsp)
 	movl	%edx, 8(%rsp)
-	xorl	%edx, %edx
-	divl	%ecx
+	cltd
+	idivl	%ecx
 	movl	%edx, %edi
 	movl	%esi, %eax
-	xorl	%edx, %edx
-	divl	%ecx
+	cltd
+	idivl	%ecx
 	orl	%edi, %edx
 	jne	.LBB3_3
 # %bb.1:                                # %body

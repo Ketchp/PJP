@@ -1,0 +1,147 @@
+; ModuleID = 'sortBubble'
+source_filename = "sortBubble"
+
+@I = common global i32 0
+@J = common global i32 0
+@TEMP = common global i32 0
+@X = common global [21 x i32] zeroinitializer
+
+declare i32 @writeln(i32)
+
+declare i32 @readln(i32*)
+
+define i32 @main() {
+entry:
+  store i32 0, i32* @I, align 4
+  br label %body
+
+body:                                             ; preds = %inc, %entry
+  %load_global = load i32, i32* @I, align 4
+  %elem_ptr = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %load_global
+  %load_global1 = load i32, i32* @I, align 4
+  %sub_tmp = sub i32 20, %load_global1
+  store i32 %sub_tmp, i32* %elem_ptr, align 4
+  %iter_value = load i32, i32* @I, align 4
+  %stop_cond = icmp eq i32 %iter_value, 20
+  br i1 %stop_cond, label %after, label %inc
+
+inc:                                              ; preds = %body
+  %iter_value2 = load i32, i32* @I, align 4
+  %step = add i32 %iter_value2, 1
+  store i32 %step, i32* @I, align 4
+  br label %body
+
+after:                                            ; preds = %body
+  store i32 0, i32* @I, align 4
+  br label %body3
+
+body3:                                            ; preds = %inc4, %after
+  %load_global6 = load i32, i32* @I, align 4
+  %load_global7 = load i32, i32* @I, align 4
+  %elem_ptr8 = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %load_global7
+  %dereference = load i32, i32* %elem_ptr8, align 4
+  %call_tmp = call i32 @writeln(i32 %dereference)
+  %iter_value9 = load i32, i32* @I, align 4
+  %stop_cond10 = icmp eq i32 %iter_value9, 20
+  br i1 %stop_cond10, label %after5, label %inc4
+
+inc4:                                             ; preds = %body3
+  %iter_value11 = load i32, i32* @I, align 4
+  %step12 = add i32 %iter_value11, 1
+  store i32 %step12, i32* @I, align 4
+  br label %body3
+
+after5:                                           ; preds = %body3
+  store i32 1, i32* @I, align 4
+  br label %body13
+
+body13:                                           ; preds = %inc14, %after5
+  store i32 20, i32* @J, align 4
+  br label %body16
+
+inc14:                                            ; preds = %after18
+  %iter_value54 = load i32, i32* @I, align 4
+  %step55 = add i32 %iter_value54, 1
+  store i32 %step55, i32* @I, align 4
+  br label %body13
+
+after15:                                          ; preds = %after18
+  store i32 0, i32* @I, align 4
+  br label %body56
+
+body16:                                           ; preds = %inc17, %body13
+  %load_global19 = load i32, i32* @J, align 4
+  %load_global20 = load i32, i32* @J, align 4
+  %elem_ptr21 = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %load_global20
+  %dereference22 = load i32, i32* %elem_ptr21, align 4
+  %load_global23 = load i32, i32* @J, align 4
+  %sub_tmp24 = sub i32 %load_global23, 1
+  %load_global25 = load i32, i32* @J, align 4
+  %sub_tmp26 = sub i32 %load_global25, 1
+  %elem_ptr27 = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %sub_tmp26
+  %dereference28 = load i32, i32* %elem_ptr27, align 4
+  %lt_tmp = icmp slt i32 %dereference22, %dereference28
+  %if_cond = icmp ne i1 %lt_tmp, false
+  br i1 %if_cond, label %body29, label %else
+
+inc17:                                            ; preds = %after30
+  %iter_value50 = load i32, i32* @J, align 4
+  %step51 = add i32 %iter_value50, -1
+  store i32 %step51, i32* @J, align 4
+  br label %body16
+
+after18:                                          ; preds = %after30
+  %iter_value52 = load i32, i32* @I, align 4
+  %stop_cond53 = icmp eq i32 %iter_value52, 20
+  br i1 %stop_cond53, label %after15, label %inc14
+
+body29:                                           ; preds = %body16
+  %load_global31 = load i32, i32* @J, align 4
+  %sub_tmp32 = sub i32 %load_global31, 1
+  %load_global33 = load i32, i32* @J, align 4
+  %sub_tmp34 = sub i32 %load_global33, 1
+  %elem_ptr35 = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %sub_tmp34
+  %dereference36 = load i32, i32* %elem_ptr35, align 4
+  store i32 %dereference36, i32* @TEMP, align 4
+  %load_global37 = load i32, i32* @J, align 4
+  %sub_tmp38 = sub i32 %load_global37, 1
+  %elem_ptr39 = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %sub_tmp38
+  %load_global40 = load i32, i32* @J, align 4
+  %load_global41 = load i32, i32* @J, align 4
+  %elem_ptr42 = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %load_global41
+  %dereference43 = load i32, i32* %elem_ptr42, align 4
+  store i32 %dereference43, i32* %elem_ptr39, align 4
+  %load_global44 = load i32, i32* @J, align 4
+  %elem_ptr45 = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %load_global44
+  %load_global46 = load i32, i32* @TEMP, align 4
+  store i32 %load_global46, i32* %elem_ptr45, align 4
+  br label %after30
+
+else:                                             ; preds = %body16
+  br label %after30
+
+after30:                                          ; preds = %else, %body29
+  %iter_value47 = load i32, i32* @J, align 4
+  %load_global48 = load i32, i32* @I, align 4
+  %stop_cond49 = icmp eq i32 %iter_value47, %load_global48
+  br i1 %stop_cond49, label %after18, label %inc17
+
+body56:                                           ; preds = %inc57, %after15
+  %load_global59 = load i32, i32* @I, align 4
+  %load_global60 = load i32, i32* @I, align 4
+  %elem_ptr61 = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %load_global60
+  %dereference62 = load i32, i32* %elem_ptr61, align 4
+  %call_tmp63 = call i32 @writeln(i32 %dereference62)
+  %iter_value64 = load i32, i32* @I, align 4
+  %stop_cond65 = icmp eq i32 %iter_value64, 20
+  br i1 %stop_cond65, label %after58, label %inc57
+
+inc57:                                            ; preds = %body56
+  %iter_value66 = load i32, i32* @I, align 4
+  %step67 = add i32 %iter_value66, 1
+  store i32 %step67, i32* @I, align 4
+  br label %body56
+
+after58:                                          ; preds = %body56
+  ret i32 0
+}

@@ -176,6 +176,10 @@ struct Type {
         return type == T::FUNCTION_T;
     }
 
+    [[nodiscard]] virtual llvm::Type *typegen(llvm::IRBuilder<> &builder) const {
+        return typegen_trivial(builder);
+    }
+
     [[nodiscard]] llvm::Type *typegen_trivial(llvm::IRBuilder<> &builder) const {
         switch (type) {
             case T::UNKNOWN_T:
@@ -329,9 +333,15 @@ using SYMBOL_CLASS = SymbolTable::SymbolInfo::Symbol_class;
 struct TypeArray: public Type {
     TypeArray(std::shared_ptr<Type> element, Mila_int_T start, Mila_int_T stop);
 
-    [[nodiscard]] llvm::ArrayType *typegen_array(llvm::IRBuilder<> &builder, const llvm::Module &module) const {
-        // todo
-        return nullptr;
+    [[nodiscard]] llvm::Type *typegen(llvm::IRBuilder<> &builder) const override {
+        return typegen_array(builder);
+    }
+
+    [[nodiscard]] llvm::ArrayType *typegen_array(llvm::IRBuilder<> &builder) const {
+        return llvm::ArrayType::get(
+                element_type->typegen(builder),
+                array_end - array_start + 1
+        );
     }
 
     std::shared_ptr<Type> element_type;
@@ -347,7 +357,7 @@ struct Statement {
     virtual llvm::Value *get_address(llvm::IRBuilder<> &, const llvm::Module &) const {
         throw GeneratorError{"Get address not supported on this stmt"};
     }
-    [[nodiscard]] virtual llvm::Value *get_store() const {
+    [[nodiscard]] virtual llvm::Value *get_store(llvm::IRBuilder<> &builder, const llvm::Module &module) const {
         throw GeneratorError{"No AllocaInst."};
     };
 };
@@ -508,7 +518,7 @@ struct Expression: public Statement {
     [[nodiscard]] virtual Mila_variant_T get_value() const = 0;
     [[nodiscard]] virtual std::shared_ptr<Type> get_type() const = 0;
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &, const llvm::Module &) const override = 0;
+    llvm::Value *codegen(llvm::IRBuilder<> &, const llvm::Module &) const override = 0;
 };
 
 
@@ -576,7 +586,7 @@ struct IdentifierExpression: public Expression {
         return identifier_info->type;
     }
 
-    [[nodiscard]] llvm::Value *get_store() const override {
+    [[nodiscard]] llvm::Value *get_store(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
         if(identifier_info->symbol_class == SYMBOL_CLASS::CONST)
             throw GeneratorError{"Can not store to CONST"};
         if(identifier_info->symbol_class == SYMBOL_CLASS::FUNCTION)
@@ -587,11 +597,28 @@ struct IdentifierExpression: public Expression {
         return identifier_info->global_variable;
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
         switch (identifier_info->symbol_class) {
             case SYMBOL_CLASS::PARAM:
             case SYMBOL_CLASS::VAR:
-                // todo for not trivial
+                if(identifier_info->type->is_array()) {
+                    auto arr_t = std::dynamic_pointer_cast<TypeArray>(identifier_info->type);
+//                    if(arr_t->array_start != 0) {
+//                        std::vector<llvm::Value *> indices{
+//                                llvm::ConstantInt::get(llvm::Type::getInt32Ty(builder.getContext()), 0),
+//                                llvm::ConstantInt::get(llvm::Type::getInt32Ty(builder.getContext()), -arr_t->array_start),
+//                        };
+//
+//                        return builder.CreateGEP(
+//                                arr_t->typegen(builder),
+//                                identifier_info->global_variable,
+//                                indices,
+//                                "elem_ptr"
+//                        );
+//                    }
+                    return identifier_info->global_variable;
+                }
+
                 if(identifier_info->global_variable)
                     return builder.CreateLoad(identifier_info->type->typegen_trivial(builder),
                                               identifier_info->global_variable,
@@ -667,9 +694,37 @@ struct UnaryExpression: public Expression {
         return child->get_type();
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &, const llvm::Module &) const override {
-        // todo
-        return nullptr;
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
+        if constexpr (OPERATION == UnaryOp::PLUS) {
+            return child->codegen(builder, module);
+        }
+        if constexpr (OPERATION == UnaryOp::MINUS) {
+            auto child_t = child->get_type();
+            if(child_t->is_int()) {
+                return builder.CreateSub(
+                        llvm::ConstantInt::get(llvm::Type::getInt32Ty(builder.getContext()), 0),
+                        child->codegen(builder, module)
+                );
+            } else if(child_t->is_real()) {
+                return builder.CreateFSub(
+                        llvm::ConstantFP::get(llvm::Type::getDoubleTy(builder.getContext()), 0),
+                        child->codegen(builder, module)
+                );
+            }
+        }
+        if constexpr (OPERATION == UnaryOp::NOT) {
+            if(child->get_type()->is_int())
+                return builder.CreateZExt(
+                        builder.CreateICmpNE(
+                            child->codegen(builder, module),
+                            llvm::ConstantInt::get(llvm::Type::getInt32Ty(builder.getContext()), 0),
+                            "not"
+                        ),
+                        llvm::Type::getInt32Ty(builder.getContext()),
+                        "int_ext"
+                );
+        }
+        throw GeneratorError{"Type not supported for unary operation"};
     }
 
     std::unique_ptr<Expression> child;
@@ -829,7 +884,7 @@ struct BinaryExpression: public Expression {
 
     [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
         if constexpr(OPERATION == BinaryOp::ASSIGN) {
-            auto lhs_store = lhs->get_store();
+            auto lhs_store = lhs->get_store(builder, module);
             auto rhs_code = rhs->codegen(builder, module);
 
             builder.CreateStore(rhs_code, lhs_store);
@@ -918,12 +973,51 @@ struct BinaryExpression: public Expression {
         }
         if constexpr(OPERATION == BinaryOp::MOD) {
             if(lhs_type->is_int())
-                return builder.CreateURem(lhs_code, rhs_code, "rem_tmp");
+                return builder.CreateSRem(lhs_code, rhs_code, "rem_tmp");
         }
         if constexpr(OPERATION == BinaryOp::SUBSCRIPT)
-            throw GeneratorError{"Not implemented"};
+            return builder.CreateLoad(
+                    get_type()->typegen_trivial(builder),
+                    get_store(builder, module),
+                    "dereference"
+            );
 
         throw GeneratorError{"Operation not supported for type."};
+    }
+
+    [[nodiscard]] llvm::Value *get_store(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
+        if constexpr (OPERATION == BinaryOp::SUBSCRIPT) {
+            auto array_type = lhs->get_type()->typegen(builder);
+            auto *idx = rhs->codegen(builder, module);
+
+            auto *lhs_id = dynamic_cast<IdentifierExpression *>(lhs.get());
+            auto *lhs_arr = dynamic_cast<TypeArray *>(lhs_id->identifier_info->type.get());
+            auto arr_start = lhs_arr->array_start;
+
+            if(arr_start != 0) {
+                idx = builder.CreateSub(
+                        idx,
+                        llvm::ConstantInt::get(llvm::Type::getInt32Ty(builder.getContext()), arr_start),
+                        "arr_start"
+                );
+            }
+
+            std::vector<llvm::Value *> indices{
+                    llvm::ConstantInt::get(llvm::Type::getInt32Ty(builder.getContext()), 0),
+                    idx
+            };
+
+            return builder.CreateGEP(
+                    array_type,
+                    lhs->codegen(builder, module),
+                    indices,
+                    "elem_ptr"
+            );
+        }
+        if constexpr (OPERATION == BinaryOp::ASSIGN)
+            return lhs->get_store(builder, module);
+
+        throw GeneratorError{"get_store not supported for operation."};
     }
 
     std::unique_ptr<Expression> lhs, rhs;
@@ -1003,9 +1097,9 @@ struct CallExpression: public Expression {
 
         if(argT->is_int()) {
             auto llvmT = argT->typegen_trivial(builder);
-            Value v = builder.CreateLoad(llvmT, arg->get_store(), "dec_load");
+            Value v = builder.CreateLoad(llvmT, arg->get_store(builder, module), "dec_load");
             v = builder.CreateSub(v, llvm::ConstantInt::get(llvmT, 1), "dec");
-            builder.CreateStore(v, arg->get_store(), "dec_store");
+            builder.CreateStore(v, arg->get_store(builder, module), "dec_store");
             return nullptr;
         }
         throw GeneratorError{"Function 'dec' supported only for integers."};
@@ -1135,8 +1229,66 @@ struct ForStatement: public Statement {
         increment{direction == TokenType::TOK_TO}
     {}
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &, const llvm::Module &module) const override {
-        // todo
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
+        auto &context = builder.getContext();
+        auto *parent = builder.GetInsertBlock()->getParent();
+
+        auto body_BB = llvm::BasicBlock::Create(context, "body", parent);
+        auto increment_BB = llvm::BasicBlock::Create(context, "inc", parent);
+        auto after_BB = llvm::BasicBlock::Create(context, "after", parent);
+
+        // for loop start
+        init->codegen(builder, module);
+
+        // immediately jump to body,
+        // body always executed at least once
+        builder.CreateBr(body_BB);
+
+        auto iter_type = init->get_type()->typegen_trivial(builder);
+        auto iter_store = init->get_store(builder, module);
+
+        // build body
+        {
+            builder.SetInsertPoint(body_BB);
+            body->codegen(builder, module);
+
+            auto iter_value = builder.CreateLoad(
+                    iter_type,
+                    iter_store,
+                    "iter_value"
+            );
+
+            auto stop_value = stop_condition->codegen(builder, module);
+
+            auto stop = builder.CreateICmpEQ(iter_value, stop_value, "stop_cond");
+
+            builder.CreateCondBr(stop, after_BB, increment_BB);
+        }
+
+        // increment / decrement
+        {
+            builder.SetInsertPoint(increment_BB);
+
+            auto iter_value = builder.CreateLoad(
+                    iter_type,
+                    iter_store,
+                    "iter_value"
+            );
+
+            auto step = llvm::ConstantInt::get(
+                    builder.getContext(),
+                    llvm::APInt(Mila_int_T_bits, (increment ? 1 : -1), Mila_int_T_signed)
+            );
+
+            builder.CreateStore(
+                    builder.CreateAdd(iter_value, step, "step"),
+                    iter_store
+            );
+
+            builder.CreateBr(body_BB);
+        }
+
+        builder.SetInsertPoint(after_BB);
         return nullptr;
     }
 

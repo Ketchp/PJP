@@ -22,10 +22,15 @@ isprime:                                # @isprime
 	retq
 .LBB0_2:                                # %else5
 	movl	-8(%rsp), %eax
-	testb	$1, %al
+	movl	%eax, %ecx
+	shrl	$31, %ecx
+	addl	%eax, %ecx
+	andl	$-2, %ecx
+	cmpl	%ecx, %eax
 	sete	%cl
 	imull	$-1431655765, %eax, %eax        # imm = 0xAAAAAAAB
-	cmpl	$1431655766, %eax               # imm = 0x55555556
+	addl	$715827882, %eax                # imm = 0x2AAAAAAA
+	cmpl	$1431655765, %eax               # imm = 0x55555555
 	setb	%al
 	orb	%cl, %al
 	jne	.LBB0_7
@@ -41,8 +46,8 @@ isprime:                                # @isprime
 # %bb.5:                                # %body17
                                         #   in Loop: Header=BB0_4 Depth=1
 	movl	-8(%rsp), %eax
-	xorl	%edx, %edx
-	divl	-4(%rsp)
+	cltd
+	idivl	-4(%rsp)
 	testl	%edx, %edx
 	je	.LBB0_7
 # %bb.6:                                # %else29

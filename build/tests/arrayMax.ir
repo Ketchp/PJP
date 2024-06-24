@@ -1,0 +1,96 @@
+; ModuleID = 'arrayMax'
+source_filename = "arrayMax"
+
+@I = common global i32 0
+@MAX = common global i32 0
+@X = common global [21 x i32] zeroinitializer
+
+declare i32 @writeln(i32)
+
+declare i32 @readln(i32*)
+
+define i32 @main() {
+entry:
+  store i32 11, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 0), align 4
+  store i32 66, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 1), align 4
+  store i32 128, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 2), align 4
+  store i32 49, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 3), align 4
+  store i32 133, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 4), align 4
+  store i32 46, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 5), align 4
+  store i32 15, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 6), align 4
+  store i32 87, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 7), align 4
+  store i32 55, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 8), align 4
+  store i32 37, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 9), align 4
+  store i32 78, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 10), align 4
+  store i32 44, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 11), align 4
+  store i32 33, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 12), align 4
+  store i32 38, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 13), align 4
+  store i32 85, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 14), align 4
+  store i32 6, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 15), align 4
+  store i32 150, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 16), align 4
+  store i32 4, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 17), align 4
+  store i32 1, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 18), align 4
+  store i32 55, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 19), align 4
+  store i32 78, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 20), align 4
+  store i32 0, i32* @I, align 4
+  br label %body
+
+body:                                             ; preds = %inc, %entry
+  %load_global = load i32, i32* @I, align 4
+  %load_global1 = load i32, i32* @I, align 4
+  %elem_ptr = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %load_global1
+  %dereference = load i32, i32* %elem_ptr, align 4
+  %call_tmp = call i32 @writeln(i32 %dereference)
+  %iter_value = load i32, i32* @I, align 4
+  %stop_cond = icmp eq i32 %iter_value, 20
+  br i1 %stop_cond, label %after, label %inc
+
+inc:                                              ; preds = %body
+  %iter_value2 = load i32, i32* @I, align 4
+  %step = add i32 %iter_value2, 1
+  store i32 %step, i32* @I, align 4
+  br label %body
+
+after:                                            ; preds = %body
+  %dereference3 = load i32, i32* getelementptr inbounds ([21 x i32], [21 x i32]* @X, i32 0, i32 0), align 4
+  store i32 %dereference3, i32* @MAX, align 4
+  store i32 1, i32* @I, align 4
+  br label %body4
+
+body4:                                            ; preds = %inc5, %after
+  %load_global7 = load i32, i32* @MAX, align 4
+  %load_global8 = load i32, i32* @I, align 4
+  %load_global9 = load i32, i32* @I, align 4
+  %elem_ptr10 = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %load_global9
+  %dereference11 = load i32, i32* %elem_ptr10, align 4
+  %lt_tmp = icmp slt i32 %load_global7, %dereference11
+  %if_cond = icmp ne i1 %lt_tmp, false
+  br i1 %if_cond, label %body12, label %else
+
+inc5:                                             ; preds = %after13
+  %iter_value20 = load i32, i32* @I, align 4
+  %step21 = add i32 %iter_value20, 1
+  store i32 %step21, i32* @I, align 4
+  br label %body4
+
+after6:                                           ; preds = %after13
+  %load_global22 = load i32, i32* @MAX, align 4
+  %call_tmp23 = call i32 @writeln(i32 %load_global22)
+  ret i32 0
+
+body12:                                           ; preds = %body4
+  %load_global14 = load i32, i32* @I, align 4
+  %load_global15 = load i32, i32* @I, align 4
+  %elem_ptr16 = getelementptr [21 x i32], [21 x i32]* @X, i32 0, i32 %load_global15
+  %dereference17 = load i32, i32* %elem_ptr16, align 4
+  store i32 %dereference17, i32* @MAX, align 4
+  br label %after13
+
+else:                                             ; preds = %body4
+  br label %after13
+
+after13:                                          ; preds = %else, %body12
+  %iter_value18 = load i32, i32* @I, align 4
+  %stop_cond19 = icmp eq i32 %iter_value18, 20
+  br i1 %stop_cond19, label %after6, label %inc5
+}

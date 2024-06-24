@@ -44,7 +44,7 @@ entry:
   %call_tmp20 = call i32 @writeln(i32 %load_global19)
   %load_global21 = load i32, i32* @a, align 4
   %load_global22 = load i32, i32* @b, align 4
-  %rem_tmp = urem i32 %load_global21, %load_global22
+  %rem_tmp = srem i32 %load_global21, %load_global22
   store i32 %rem_tmp, i32* @d, align 4
   %load_global23 = load i32, i32* @d, align 4
   %call_tmp24 = call i32 @writeln(i32 %load_global23)

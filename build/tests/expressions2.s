@@ -51,8 +51,8 @@ main:                                   # @main
 	movl	%edi, (%rax)
 	callq	writeln@PLT
 	movl	(%r15), %eax
-	xorl	%edx, %edx
-	divl	(%r12)
+	cltd
+	idivl	(%r12)
 	movl	%edx, %edi
 	movq	d@GOTPCREL(%rip), %rax
 	movl	%edx, (%rax)

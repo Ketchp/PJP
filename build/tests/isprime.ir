@@ -42,10 +42,10 @@ else5:                                            ; preds = %after
 
 after6:                                           ; preds = %else5, %body4
   %load_var8 = load i32, i32* %n_store, align 4
-  %rem_tmp = urem i32 %load_var8, 2
+  %rem_tmp = srem i32 %load_var8, 2
   %eq_tmp = icmp eq i32 %rem_tmp, 0
   %load_var9 = load i32, i32* %n_store, align 4
-  %rem_tmp10 = urem i32 %load_var9, 3
+  %rem_tmp10 = srem i32 %load_var9, 3
   %eq_tmp11 = icmp eq i32 %rem_tmp10, 0
   %or_tmp = or i1 %eq_tmp, %eq_tmp11
   %if_cond12 = icmp ne i1 %or_tmp, false
@@ -75,7 +75,7 @@ cond:                                             ; preds = %after30, %after15
 body17:                                           ; preds = %cond
   %load_var23 = load i32, i32* %n_store, align 4
   %load_var24 = load i32, i32* %i_store, align 4
-  %rem_tmp25 = urem i32 %load_var23, %load_var24
+  %rem_tmp25 = srem i32 %load_var23, %load_var24
   %eq_tmp26 = icmp eq i32 %rem_tmp25, 0
   %if_cond27 = icmp ne i1 %eq_tmp26, false
   br i1 %if_cond27, label %body28, label %else29

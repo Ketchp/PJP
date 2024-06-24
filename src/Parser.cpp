@@ -663,7 +663,6 @@ std::shared_ptr<llvm::Module> Parser::_generate()
     // create function definitions
     // create global variables / constants
     for(auto &[name, var_info]: program->function_type->local_variables->variables) {
-        using SYMBOL_CLASS = SymbolTable::SymbolInfo::Symbol_class;
         switch (var_info.symbol_class) {
             case SYMBOL_CLASS::PARAM:
             case SYMBOL_CLASS::RETURN_VALUE:
@@ -672,12 +671,21 @@ std::shared_ptr<llvm::Module> Parser::_generate()
             case SYMBOL_CLASS::VAR:
                 var_info.global_variable = new llvm::GlobalVariable{
                         *mila_module,
-                        var_info.type->typegen_trivial(*mila_builder),
+                        var_info.type->typegen(*mila_builder),
                         false,
                         llvm::GlobalValue::CommonLinkage,
-                        llvm::ConstantInt::get(llvm::Type::getInt32Ty(*mila_context), 0),
+                        nullptr,
                         name.identifier
                 };
+                if(var_info.type->is_array())
+                    var_info.global_variable->setInitializer(
+                            llvm::ConstantAggregateZero::get(var_info.global_variable->getValueType())
+                    );
+                else
+                    var_info.global_variable->setInitializer(
+                            llvm::ConstantInt::get(llvm::Type::getInt32Ty(*mila_context), 0)
+                    );
+
                 break;
             case SYMBOL_CLASS::CONST:
                 var_info.value = std::visit(overloaded{
