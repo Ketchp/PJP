@@ -32,6 +32,7 @@ begin
     begin
         break;
     end;
+    I := I + 1;
   end;
   writeln(I);
 
@@ -40,7 +41,8 @@ begin
   while I < 5 do
   begin
     writeln(I);
-    if I = 1 then
+    I := I + 1;
+    if I = 2 then
     begin
         continue;
     end;
@@ -50,9 +52,9 @@ begin
 
   write_str('Nested break/continue\n');
   I := 1561;
+  writeln(I);
   while 1 <> 0 do
   begin
-    writeln(I);
     while 1 <> 0 do
     begin
       if (I mod 2) = 1 then
@@ -60,14 +62,15 @@ begin
         break;
       end;
       I := I div 2;
+      writeln(I);
       continue;
     end;
 
-    writeln(I);
     if I = 1 then
     begin
       break;
     end;
     I := 3 * I + 1;
+    writeln(I);
   end;
 end.

@@ -18,87 +18,103 @@ main:                                   # @main
                                         # =>This Inner Loop Header: Depth=1
 	movl	(%rbx), %edi
 	callq	writeln@PLT
+	cmpl	$1, (%rbx)
+	je	.LBB0_2
+# %bb.6:                                # %else
+                                        #   in Loop: Header=BB0_1 Depth=1
 	cmpl	$3, (%rbx)
-	je	.LBB0_3
-# %bb.2:                                # %inc
+	je	.LBB0_2
+# %bb.7:                                # %inc
                                         #   in Loop: Header=BB0_1 Depth=1
 	incl	(%rbx)
 	jmp	.LBB0_1
-.LBB0_3:                                # %after
+.LBB0_2:                                # %after
 	movl	(%rbx), %edi
 	callq	writeln@PLT
 	leaq	.Lstr_literal.1(%rip), %rdi
 	callq	write_str@PLT
 	movl	$0, (%rbx)
 	.p2align	4, 0x90
-.LBB0_4:                                # %body9
+.LBB0_3:                                # %body9
                                         # =>This Inner Loop Header: Depth=1
 	movl	(%rbx), %edi
 	callq	writeln@PLT
 	cmpl	$1, (%rbx)
-	je	.LBB0_5
+	je	.LBB0_4
 # %bb.8:                                # %else19
-                                        #   in Loop: Header=BB0_4 Depth=1
+                                        #   in Loop: Header=BB0_3 Depth=1
 	movl	(%rbx), %edi
 	callq	writeln@PLT
+.LBB0_4:                                # %stop10
+                                        #   in Loop: Header=BB0_3 Depth=1
 	cmpl	$3, (%rbx)
-	je	.LBB0_5
-# %bb.9:                                # %inc11
-                                        #   in Loop: Header=BB0_4 Depth=1
+	je	.LBB0_9
+# %bb.5:                                # %inc11
+                                        #   in Loop: Header=BB0_3 Depth=1
 	incl	(%rbx)
-	jmp	.LBB0_4
-.LBB0_5:                                # %after12
+	jmp	.LBB0_3
+.LBB0_9:                                # %after12
 	movl	(%rbx), %edi
 	callq	writeln@PLT
 	leaq	.Lstr_literal.2(%rip), %rdi
 	callq	write_str@PLT
 	movl	$0, (%rbx)
 	cmpl	$4, (%rbx)
-	jg	.LBB0_10
+	jg	.LBB0_12
 	.p2align	4, 0x90
-.LBB0_7:                                # %body30
+.LBB0_11:                               # %body30
                                         # =>This Inner Loop Header: Depth=1
 	movl	(%rbx), %edi
 	callq	writeln@PLT
+	cmpl	$1, (%rbx)
+	je	.LBB0_12
+# %bb.23:                               # %else40
+                                        #   in Loop: Header=BB0_11 Depth=1
+	incl	(%rbx)
 	cmpl	$4, (%rbx)
-	jle	.LBB0_7
-.LBB0_10:                               # %after31
+	jle	.LBB0_11
+.LBB0_12:                               # %after31
 	movl	(%rbx), %edi
 	callq	writeln@PLT
 	leaq	.Lstr_literal.3(%rip), %rdi
 	callq	write_str@PLT
 	movl	$0, (%rbx)
-	cmpl	$4, (%rbx)
-	jg	.LBB0_13
 	.p2align	4, 0x90
-.LBB0_12:                               # %body47
+.LBB0_13:                               # %cond47
                                         # =>This Inner Loop Header: Depth=1
-	movl	(%rbx), %edi
-	callq	writeln@PLT
-	cmpl	$1, (%rbx)
-	je	.LBB0_13
-# %bb.18:                               # %else58
-                                        #   in Loop: Header=BB0_12 Depth=1
-	movl	(%rbx), %edi
-	callq	writeln@PLT
 	cmpl	$4, (%rbx)
-	jle	.LBB0_12
-.LBB0_13:                               # %after48
+	jg	.LBB0_16
+# %bb.14:                               # %body48
+                                        #   in Loop: Header=BB0_13 Depth=1
+	movl	(%rbx), %edi
+	callq	writeln@PLT
+	movl	(%rbx), %eax
+	incl	%eax
+	movl	%eax, (%rbx)
+	cmpl	$2, %eax
+	je	.LBB0_13
+# %bb.15:                               # %else61
+                                        #   in Loop: Header=BB0_13 Depth=1
+	movl	(%rbx), %edi
+	callq	writeln@PLT
+	jmp	.LBB0_13
+.LBB0_16:                               # %after49
 	movl	(%rbx), %edi
 	callq	writeln@PLT
 	leaq	.Lstr_literal.4(%rip), %rdi
 	callq	write_str@PLT
 	movl	$1561, (%rbx)                   # imm = 0x619
+	movl	$1561, %edi                     # imm = 0x619
+	jmp	.LBB0_17
 	.p2align	4, 0x90
-.LBB0_14:                               # %cond66
-                                        # =>This Loop Header: Depth=1
-                                        #     Child Loop BB0_15 Depth 2
+.LBB0_20:                               # %else81
+                                        #   in Loop: Header=BB0_17 Depth=1
 	movl	(%rbx), %edi
+	sarl	%edi
+	movl	%edi, (%rbx)
+.LBB0_17:                               # %cond74
+                                        # =>This Inner Loop Header: Depth=1
 	callq	writeln@PLT
-	.p2align	4, 0x90
-.LBB0_15:                               # %cond71
-                                        #   Parent Loop BB0_14 Depth=1
-                                        # =>  This Inner Loop Header: Depth=2
 	movl	(%rbx), %eax
 	movl	%eax, %ecx
 	shrl	$31, %ecx
@@ -106,21 +122,22 @@ main:                                   # @main
 	andl	$-2, %ecx
 	subl	%ecx, %eax
 	cmpl	$1, %eax
-	je	.LBB0_15
-# %bb.16:                               # %else78
-                                        #   in Loop: Header=BB0_14 Depth=1
-	movl	(%rbx), %edi
-	sarl	%edi
-	movl	%edi, (%rbx)
-	callq	writeln@PLT
+	jne	.LBB0_20
+# %bb.18:                               # %after76
+                                        #   in Loop: Header=BB0_17 Depth=1
 	cmpl	$1, (%rbx)
-	je	.LBB0_14
-# %bb.17:                               # %else89
-                                        #   in Loop: Header=BB0_14 Depth=1
+	je	.LBB0_19
+# %bb.22:                               # %else92
+                                        #   in Loop: Header=BB0_17 Depth=1
 	movl	(%rbx), %eax
-	leal	1(%rax,%rax,2), %eax
-	movl	%eax, (%rbx)
-	jmp	.LBB0_14
+	leal	1(%rax,%rax,2), %edi
+	movl	%edi, (%rbx)
+	jmp	.LBB0_17
+.LBB0_19:                               # %after73
+	xorl	%eax, %eax
+	popq	%rbx
+	.cfi_def_cfa_offset 8
+	retq
 .Lfunc_end0:
 	.size	main, .Lfunc_end0-main
 	.cfi_endproc

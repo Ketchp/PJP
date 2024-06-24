@@ -1470,12 +1470,12 @@ struct ContinueStatement: public Statement {
         auto &context = builder.getContext();
         auto *parent = builder.GetInsertBlock()->getParent();
 
-        auto break_BB = llvm::BasicBlock::Create(context, "after_break", parent);
+        auto continue_BB = llvm::BasicBlock::Create(context, "after_continue", parent);
 
-        builder.CreateBr(descent.continue_break_BBs.back().second);
+        builder.CreateBr(descent.continue_break_BBs.back().first);
 
-        builder.SetInsertPoint(break_BB);
-        builder.CreateUnreachable();  // block after break is unreachable
+        builder.SetInsertPoint(continue_BB);
+        builder.CreateUnreachable();  // block after continue is unreachable
 
         return nullptr;
     }
@@ -1486,12 +1486,12 @@ struct BreakStatement: public Statement {
         auto &context = builder.getContext();
         auto *parent = builder.GetInsertBlock()->getParent();
 
-        auto continue_BB = llvm::BasicBlock::Create(context, "after_continue", parent);
+        auto break_BB = llvm::BasicBlock::Create(context, "after_break", parent);
 
-        builder.CreateBr(descent.continue_break_BBs.back().first);
+        builder.CreateBr(descent.continue_break_BBs.back().second);
 
-        builder.SetInsertPoint(continue_BB);
-        builder.CreateUnreachable();  // block after continue is unreachable
+        builder.SetInsertPoint(break_BB);
+        builder.CreateUnreachable();  // block after break is unreachable
 
         return nullptr;
     }
