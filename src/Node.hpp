@@ -156,6 +156,10 @@ struct Type {
         return type == T::REAL_T;
     }
 
+    [[nodiscard]] bool is_string() const {
+        return type == T::STRING_T;
+    }
+
     [[nodiscard]] bool is_numeric() const {
         return is_int() || is_real();
     }
@@ -183,7 +187,7 @@ struct Type {
             case T::REAL_T:
                 return builder.getDoubleTy();
             case T::STRING_T:
-                throw GeneratorError{"Not implemented."};
+                return builder.getInt8PtrTy();
             case T::ARRAY_T:
             case T::FUNCTION_T:
                 throw GeneratorError{"Not trivial type."};
@@ -193,11 +197,13 @@ struct Type {
 
     static std::shared_ptr<Type> VOID();
     static std::shared_ptr<Type> INT();
+    static std::shared_ptr<Type> STRING();
 
     T type;
 
     static std::shared_ptr<Type> TypeVoid;
     static std::shared_ptr<Type> TypeInt;
+    static std::shared_ptr<Type> TypeString;
 //    static std::shared_ptr<Type> TypeReal;
 };
 
@@ -352,11 +358,11 @@ struct TypeArray: public Type {
 
 struct Statement {
     virtual ~Statement() = default;
-    virtual llvm::Value *codegen(llvm::IRBuilder<> &, const llvm::Module &) const = 0;
+    virtual llvm::Value *codegen(llvm::IRBuilder<> &, llvm::Module &) const = 0;
     virtual llvm::Value *get_address(llvm::IRBuilder<> &, const llvm::Module &) const {
         throw GeneratorError{"Get address not supported on this stmt"};
     }
-    [[nodiscard]] virtual llvm::Value *get_store(llvm::IRBuilder<> &, const llvm::Module &) const {
+    [[nodiscard]] virtual llvm::Value *get_store(llvm::IRBuilder<> &, llvm::Module &) const {
         throw GeneratorError{"No AllocaInst."};
     };
 };
@@ -373,7 +379,7 @@ struct Statements: public Statement {
         statements.emplace_back(std::move(statement));
     }
 
-    llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
+    llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
         for(const auto &statement: statements)
             statement->codegen(builder, module);
         return nullptr;
@@ -490,7 +496,7 @@ struct Function {
                 );
             }
 
-            if(sym_info.symbol_class == SYMBOL_CLASS ::PARAM)  // copy params to store
+            if(sym_info.symbol_class == SYMBOL_CLASS::PARAM)  // copy params to store
                 builder.CreateStore(sym_info.value, sym_info.store);
         }
 
@@ -521,7 +527,7 @@ struct Expression: public Statement {
     [[nodiscard]] virtual Mila_variant_T get_value() const = 0;
     [[nodiscard]] virtual std::shared_ptr<Type> get_type() const = 0;
 
-    llvm::Value *codegen(llvm::IRBuilder<> &, const llvm::Module &) const override = 0;
+    llvm::Value *codegen(llvm::IRBuilder<> &, llvm::Module &) const override = 0;
 };
 
 
@@ -542,7 +548,7 @@ struct LiteralExpression: public Expression {
         return std::make_shared<Type>(*Type::from_value(value));
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
         return std::visit(overloaded{
                 [](std::monostate) -> Value {throw GeneratorError{"Literal does not contain initial_value."};},
                 [&](Mila_int_T int_value) -> Value {
@@ -557,7 +563,26 @@ struct LiteralExpression: public Expression {
                             llvm::APFloat(real_value)
                     );
                 },
-                [](auto) -> Value {throw GeneratorError{"Not implemented."};},
+                [&](const Mila_string_T &str) -> Value {
+                    auto *const_string = llvm::ConstantDataArray::getString(
+                            builder.getContext(), str, true
+                    );
+
+                    auto *global_string = new llvm::GlobalVariable(
+                            module,
+                            const_string->getType(),
+                            true, // isConstant
+                            llvm::GlobalValue::PrivateLinkage,
+                            const_string,
+                            "str_literal"
+                    );
+
+                    return builder.CreatePointerCast(
+                            global_string,
+                            llvm::Type::getInt8PtrTy(builder.getContext()),
+                            "str_addr"
+                    );
+                }
         }, value);
     }
 
@@ -592,7 +617,7 @@ struct IdentifierExpression: public Expression {
         return identifier_info->type;
     }
 
-    [[nodiscard]] llvm::Value *get_store(llvm::IRBuilder<> &, const llvm::Module &) const override {
+    [[nodiscard]] llvm::Value *get_store(llvm::IRBuilder<> &, llvm::Module &) const override {
         if(identifier_info->symbol_class == SYMBOL_CLASS::CONST)
             throw GeneratorError{"Can not store to CONST"};
         if(identifier_info->symbol_class == SYMBOL_CLASS::FUNCTION)
@@ -603,7 +628,7 @@ struct IdentifierExpression: public Expression {
         return identifier_info->global_variable;
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &) const override {
         switch (identifier_info->symbol_class) {
             case SYMBOL_CLASS::RETURN_VALUE:
             case SYMBOL_CLASS::PARAM:
@@ -704,7 +729,7 @@ struct UnaryExpression: public Expression {
         return child->get_type();
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
         if constexpr (OPERATION == UnaryOp::PLUS) {
             return child->codegen(builder, module);
         }
@@ -758,7 +783,7 @@ struct CastExpression: public Expression {
         return type;
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &, const llvm::Module &) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &, llvm::Module &) const override {
         // todo
         return nullptr;
     }
@@ -988,7 +1013,7 @@ struct BinaryExpression: public Expression {
         return std::make_shared<Type>(Type::T::UNKNOWN_T);
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
         if constexpr(OPERATION == BinaryOp::ASSIGN) {
             auto lhs_store = lhs->get_store(builder, module);
             auto rhs_code = rhs->codegen(builder, module);
@@ -1091,7 +1116,7 @@ struct BinaryExpression: public Expression {
         throw GeneratorError{"Operation not supported for type."};
     }
 
-    [[nodiscard]] llvm::Value *get_store(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *get_store(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
         if constexpr (OPERATION == BinaryOp::SUBSCRIPT) {
             auto array_type = lhs->get_type()->typegen(builder);
             auto *idx = rhs->codegen(builder, module);
@@ -1153,7 +1178,7 @@ struct CallExpression: public Expression {
         return std::dynamic_pointer_cast<FunctionType>(function->get_type())->return_type;
     }
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
         const auto &fn_name =
                 std::dynamic_pointer_cast<IdentifierExpression>(function)->identifier_info->identifier;
 
@@ -1180,7 +1205,7 @@ struct CallExpression: public Expression {
         return builder.CreateCall(fn, args_code, "call_tmp");
     }
 
-    [[nodiscard]] llvm::Value *_dec_codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const {
+    [[nodiscard]] llvm::Value *_dec_codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const {
         if(arguments.size() != 1)
             throw GeneratorError{"Wrong number of arguments."};
 
@@ -1213,7 +1238,7 @@ struct IfStatement: public Statement {
         body_else{std::move(body_else)}
     {}
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
         auto &context = builder.getContext();
         auto condition_code = condition->codegen(builder, module);
 
@@ -1269,7 +1294,7 @@ struct WhileStatement: public Statement {
         body{std::move(body)}
     {}
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
         auto &context = builder.getContext();
         auto *parent = builder.GetInsertBlock()->getParent();
 
@@ -1321,7 +1346,7 @@ struct ForStatement: public Statement {
         increment{direction == TokenType::TOK_TO}
     {}
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &module) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &module) const override {
         auto &context = builder.getContext();
         auto *parent = builder.GetInsertBlock()->getParent();
 
@@ -1395,7 +1420,7 @@ struct ExitStatement: public Statement {
         : return_info{info}
     {}
 
-    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, const llvm::Module &) const override {
+    [[nodiscard]] llvm::Value *codegen(llvm::IRBuilder<> &builder, llvm::Module &) const override {
         if(return_info) {
             auto return_value = builder.CreateLoad(
                     return_info->type->typegen_trivial(builder),

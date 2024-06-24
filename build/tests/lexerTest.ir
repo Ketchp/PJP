@@ -1,0 +1,88 @@
+; ModuleID = 'lexerTest'
+source_filename = "lexerTest"
+
+@A = common global i32 0
+@B = common global double 0
+@C = common global i8* 0
+@str_literal = private constant [8 x i8] c"fwrgdbf\00"
+@str_literal.1 = private constant [1 x i8] zeroinitializer
+@str_literal.2 = private constant [2 x i8] c"'\00"
+@str_literal.3 = private constant [2 x i8] c"\22\00"
+@str_literal.4 = private constant [5 x i8] c"\0Aabc\00"
+@str_literal.5 = private constant [4 x i8] c"abc\00"
+@str_literal.6 = private constant [2 x i8] c"\\\00"
+@str_literal.7 = private constant [9 x i8] c"new\0Aline\00"
+@str_literal.8 = private constant [2 x i8] c"?\00"
+@str_literal.9 = private constant [2 x i8] zeroinitializer
+@str_literal.10 = private constant [9 x i8] c"abc\\qdef\00"
+@str_literal.11 = private constant [4 x i8] c"_\0F_\00"
+@str_literal.12 = private constant [4 x i8] c"@AB\00"
+@str_literal.13 = private constant [2 x i8] c"\0F\00"
+@str_literal.14 = private constant [4 x i8] c"\000a\00"
+@str_literal.15 = private constant [3 x i8] c"\000\00"
+@str_literal.16 = private constant [3 x i8] c"S0\00"
+@str_literal.17 = private constant [3 x i8] c"(9\00"
+
+declare i32 @writeln(i32)
+
+declare i32 @write_str(i8*)
+
+declare i32 @readln(i32*)
+
+define i32 @main() {
+entry:
+  store i32 0, i32* @A, align 4
+  store i32 0, i32* @A, align 4
+  store i32 0, i32* @A, align 4
+  store i32 0, i32* @A, align 4
+  store i32 0, i32* @A, align 4
+  store i32 64, i32* @A, align 4
+  store i32 256, i32* @A, align 4
+  store double 0x3FDA89C362C0BF79, double* @B, align 8
+  store double 5.648600e+01, double* @B, align 8
+  store double 0x49A778C48F8684F8, double* @B, align 8
+  store double 0x43A1151B37E2EC7F, double* @B, align 8
+  store double 0x3C8A34B63E13D3A8, double* @B, align 8
+  store double 1.000000e+08, double* @B, align 8
+  store double 1.000000e+07, double* @B, align 8
+  store double 1.000000e+08, double* @B, align 8
+  store double 1.000000e+48, double* @B, align 8
+  store double 0x3FE0CD7C00000000, double* @B, align 8
+  store double 0x41974F29967D4800, double* @B, align 8
+  store double 0x477A000000000000, double* @B, align 8
+  store double 0x4348D98000000000, double* @B, align 8
+  store double 0x3D12CC0000000000, double* @B, align 8
+  store double 0x4140000000000000, double* @B, align 8
+  store double 2.621440e+05, double* @B, align 8
+  store double 0x4140000000000000, double* @B, align 8
+  store double 0x48F0000000000000, double* @B, align 8
+  store double 0x3FD0519610000000, double* @B, align 8
+  store double 0x41D92128516A3994, double* @B, align 8
+  store double 6.592000e+03, double* @B, align 8
+  store double 0x4188551BC0000000, double* @B, align 8
+  store double 0x3F33D18000000000, double* @B, align 8
+  store double 3.840000e+03, double* @B, align 8
+  store double 4.800000e+02, double* @B, align 8
+  store double 0x40700ABCDEF00000, double* @B, align 8
+  store double 0x444579BDE0000000, double* @B, align 8
+  store double 2.443900e+04, double* @B, align 8
+  store i8* getelementptr inbounds ([8 x i8], [8 x i8]* @str_literal, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([1 x i8], [1 x i8]* @str_literal.1, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([2 x i8], [2 x i8]* @str_literal.2, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([2 x i8], [2 x i8]* @str_literal.3, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([5 x i8], [5 x i8]* @str_literal.4, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str_literal.5, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([2 x i8], [2 x i8]* @str_literal.6, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([9 x i8], [9 x i8]* @str_literal.7, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([2 x i8], [2 x i8]* @str_literal.8, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([2 x i8], [2 x i8]* @str_literal.9, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([9 x i8], [9 x i8]* @str_literal.10, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str_literal.11, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str_literal.12, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([2 x i8], [2 x i8]* @str_literal.13, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([4 x i8], [4 x i8]* @str_literal.14, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([3 x i8], [3 x i8]* @str_literal.15, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([3 x i8], [3 x i8]* @str_literal.16, i32 0, i32 0), i8** @C, align 8
+  store i8* getelementptr inbounds ([3 x i8], [3 x i8]* @str_literal.17, i32 0, i32 0), i8** @C, align 8
+  ret i32 0
+}

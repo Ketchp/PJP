@@ -44,6 +44,18 @@ std::unique_ptr<Mila> Parser::parse_mila() {
         );
     }
     {
+        Identifier write_str{"write_str"};
+
+        current_table->add_function(
+                std::make_shared<Function>(
+                        Type::INT(),
+                        write_str,
+                        parameter_list_T{{Type::STRING(), Identifier{"x"}}},
+                        current_table
+                )
+        );
+    }
+    {
         Identifier readln{"readln"};
 
         current_table->add_function(
@@ -609,6 +621,7 @@ static std::set<std::string> builtins{
     // external fce.c
     "writeln",
     "write",
+    "write_str",
     "readln",
 
     // main function
@@ -635,6 +648,14 @@ std::shared_ptr<llvm::Module> Parser::_generate()
       llvm::Function *F = llvm::Function::Create(FT, llvm::Function::ExternalLinkage, "writeln", *mila_module);
       for (auto & Arg : F->args())
           Arg.setName("x");
+    }
+    // create write_str function
+    {
+        std::vector<llvm::Type*> char_ptr(1, llvm::Type::getInt8PtrTy(*mila_context));
+        llvm::FunctionType *FT = llvm::FunctionType::get(llvm::Type::getInt32Ty(*mila_context), char_ptr, false);
+        llvm::Function *F = llvm::Function::Create(FT, llvm::Function::ExternalLinkage, "write_str", *mila_module);
+        for (auto & Arg : F->args())
+            Arg.setName("x");
     }
     // create readln function
     {
@@ -666,10 +687,20 @@ std::shared_ptr<llvm::Module> Parser::_generate()
                     var_info.global_variable->setInitializer(
                             llvm::ConstantAggregateZero::get(var_info.global_variable->getValueType())
                     );
-                else
+                else if(var_info.type->is_int())
                     var_info.global_variable->setInitializer(
                             llvm::ConstantInt::get(llvm::Type::getInt32Ty(*mila_context), 0)
                     );
+                else if(var_info.type->is_real())
+                    var_info.global_variable->setInitializer(
+                            llvm::ConstantFP::get(llvm::Type::getDoubleTy(*mila_context), 0)
+                    );
+                else if(var_info.type->is_string())
+                    var_info.global_variable->setInitializer(
+                            llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(*mila_context))
+                    );
+                else
+                    throw GeneratorError{"Unsupported type for global var."};
 
                 break;
             case SYMBOL_CLASS::CONST:

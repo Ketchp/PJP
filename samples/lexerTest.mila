@@ -1,0 +1,74 @@
+program lexerTest;
+
+var A : integer;
+var B : real;
+var C : string;
+
+begin
+    A := -0;
+    A := -$0;
+    A := -&0;
+    A := +0;
+    A := -0;
+    writeln(A);
+    A := 100;
+    writeln(A);
+    A := &100;
+    writeln(A);
+    A := $100;
+    writeln(A);
+
+    B := 0.4146584;
+    B := 56.486;
+    B := 0.67e47;
+    B := 615.46e+15;
+    B := 45.46e-18;
+    B := 1.e+8;
+    B := .1e8;
+    B := 1.000e8;
+    B := 100e46;
+
+    B := &0.4146574;
+    B := &564745145.47651;
+    B := &1.50e40;
+    B := &615.46e+15;
+    B := &45.46e-17;
+    B := &1.E+7;
+    B := &.1e7;
+    B := &1.000E7;
+    B := &100e46;
+
+    B := $0.4146584;
+    B := $56484a145.a8e651;
+    B := $0.67p14;
+    B := $615.46fp+15;
+    B := $4f.46p-18;
+    B := $f.p+8;
+    B := $.fp9;
+    B := $1.00abcdefp8;
+    B := $abcdefP46;
+    B := $.beeep+15;
+
+    C := 'fwrgdbf'; write_str(C); write_str('\n');
+    C := '';        write_str(C); write_str('\n');
+    C := '\'';      write_str(C); write_str('\n');
+    C := '\"';
+    C := '
+abc';
+
+    C := '\
+abc';
+
+    C := '\\';
+    C := 'new\nline';  write_str(C); write_str('\n');
+    C := '\?';
+    C := '\0';
+    C := 'abc\qdef';  // warns
+    C := '_\xf_';
+    C := '\x40\x41\x42';
+    C := '\x0f';
+    C := '\x000a';
+    C := '\0000';
+    C := '\1230';
+    C := '\0509';
+end.

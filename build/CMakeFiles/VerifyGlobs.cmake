@@ -54,6 +54,7 @@ set(OLD_GLOB
   "/home/stefan/FIT/PJP/slavkste/samples/indirectrecursion.mila"
   "/home/stefan/FIT/PJP/slavkste/samples/inputOutput.mila"
   "/home/stefan/FIT/PJP/slavkste/samples/isprime.mila"
+  "/home/stefan/FIT/PJP/slavkste/samples/lexerTest.mila"
   "/home/stefan/FIT/PJP/slavkste/samples/sortBubble.mila"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")

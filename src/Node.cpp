@@ -26,7 +26,7 @@ Type::Type(T type)
 
 std::shared_ptr<Type> Type::TypeVoid{};
 std::shared_ptr<Type> Type::TypeInt{};
-//std::shared_ptr<Type> Type::TypeReal{};
+std::shared_ptr<Type> Type::TypeString{};
 
 std::shared_ptr<Type> Type::VOID() {
     if(!TypeVoid)
@@ -38,6 +38,12 @@ std::shared_ptr<Type> Type::INT() {
     if(!TypeInt)
         TypeInt = std::make_shared<Type>(Type::T::INT_T);
     return TypeInt;
+}
+
+std::shared_ptr<Type> Type::STRING() {
+    if(!TypeString)
+        TypeString = std::make_shared<Type>(Type::T::STRING_T);
+    return TypeString;
 }
 
 std::shared_ptr<Function> SymbolTable::add_function(

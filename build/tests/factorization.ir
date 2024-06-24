@@ -1,0 +1,173 @@
+; ModuleID = 'factorization'
+source_filename = "factorization"
+
+@str_literal = private constant [13 x i8] c"Factors of: \00"
+
+declare i32 @writeln(i32)
+
+declare i32 @write_str(i8*)
+
+declare i32 @readln(i32*)
+
+define void @factorization(i32 %n) {
+entry:
+  %i_store = alloca i32, align 4
+  %max_store = alloca i32, align 4
+  %n_store = alloca i32, align 4
+  store i32 %n, i32* %n_store, align 4
+  %call_tmp = call i32 @write_str(i8* getelementptr inbounds ([13 x i8], [13 x i8]* @str_literal, i32 0, i32 0))
+  %load_var = load i32, i32* %n_store, align 4
+  %call_tmp1 = call i32 @writeln(i32 %load_var)
+  %load_var2 = load i32, i32* %n_store, align 4
+  %lt_tmp = icmp slt i32 %load_var2, 4
+  %if_cond = icmp ne i1 %lt_tmp, false
+  br i1 %if_cond, label %body, label %else
+
+body:                                             ; preds = %entry
+  %load_var3 = load i32, i32* %n_store, align 4
+  %call_tmp4 = call i32 @writeln(i32 %load_var3)
+  ret void
+  br label %after
+
+else:                                             ; preds = %entry
+  br label %after
+
+after:                                            ; preds = %else, %body
+  br label %cond
+
+cond:                                             ; preds = %body5, %after
+  %load_var7 = load i32, i32* %n_store, align 4
+  %rem_tmp = srem i32 %load_var7, 2
+  %eq_tmp = icmp eq i32 %rem_tmp, 0
+  %if_cond8 = icmp ne i1 %eq_tmp, false
+  br i1 %if_cond8, label %body5, label %after6
+
+body5:                                            ; preds = %cond
+  %call_tmp9 = call i32 @writeln(i32 2)
+  %load_var10 = load i32, i32* %n_store, align 4
+  %div_tmp = sdiv exact i32 %load_var10, 2
+  store i32 %div_tmp, i32* %n_store, align 4
+  br label %cond
+
+after6:                                           ; preds = %cond
+  br label %cond11
+
+cond11:                                           ; preds = %body12, %after6
+  %load_var14 = load i32, i32* %n_store, align 4
+  %rem_tmp15 = srem i32 %load_var14, 3
+  %eq_tmp16 = icmp eq i32 %rem_tmp15, 0
+  %if_cond17 = icmp ne i1 %eq_tmp16, false
+  br i1 %if_cond17, label %body12, label %after13
+
+body12:                                           ; preds = %cond11
+  %call_tmp18 = call i32 @writeln(i32 3)
+  %load_var19 = load i32, i32* %n_store, align 4
+  %div_tmp20 = sdiv exact i32 %load_var19, 3
+  store i32 %div_tmp20, i32* %n_store, align 4
+  br label %cond11
+
+after13:                                          ; preds = %cond11
+  %load_var21 = load i32, i32* %n_store, align 4
+  store i32 %load_var21, i32* %max_store, align 4
+  store i32 5, i32* %i_store, align 4
+  br label %cond22
+
+cond22:                                           ; preds = %after44, %after13
+  %load_var25 = load i32, i32* %i_store, align 4
+  %load_var26 = load i32, i32* %max_store, align 4
+  %le_tmp = icmp sle i32 %load_var25, %load_var26
+  %if_cond27 = icmp ne i1 %le_tmp, false
+  br i1 %if_cond27, label %body23, label %after24
+
+body23:                                           ; preds = %cond22
+  br label %cond28
+
+after24:                                          ; preds = %cond22
+  %load_var57 = load i32, i32* %n_store, align 4
+  %ne_tmp = icmp ne i32 %load_var57, 1
+  %if_cond58 = icmp ne i1 %ne_tmp, false
+  br i1 %if_cond58, label %body59, label %else60
+
+cond28:                                           ; preds = %body29, %body23
+  %load_var31 = load i32, i32* %n_store, align 4
+  %load_var32 = load i32, i32* %i_store, align 4
+  %rem_tmp33 = srem i32 %load_var31, %load_var32
+  %eq_tmp34 = icmp eq i32 %rem_tmp33, 0
+  %if_cond35 = icmp ne i1 %eq_tmp34, false
+  br i1 %if_cond35, label %body29, label %after30
+
+body29:                                           ; preds = %cond28
+  %load_var36 = load i32, i32* %i_store, align 4
+  %call_tmp37 = call i32 @writeln(i32 %load_var36)
+  %load_var38 = load i32, i32* %n_store, align 4
+  %load_var39 = load i32, i32* %i_store, align 4
+  %div_tmp40 = sdiv exact i32 %load_var38, %load_var39
+  store i32 %div_tmp40, i32* %n_store, align 4
+  br label %cond28
+
+after30:                                          ; preds = %cond28
+  %load_var41 = load i32, i32* %i_store, align 4
+  %add_tmp = add i32 %load_var41, 2
+  store i32 %add_tmp, i32* %i_store, align 4
+  br label %cond42
+
+cond42:                                           ; preds = %body43, %after30
+  %load_var45 = load i32, i32* %n_store, align 4
+  %load_var46 = load i32, i32* %i_store, align 4
+  %rem_tmp47 = srem i32 %load_var45, %load_var46
+  %eq_tmp48 = icmp eq i32 %rem_tmp47, 0
+  %if_cond49 = icmp ne i1 %eq_tmp48, false
+  br i1 %if_cond49, label %body43, label %after44
+
+body43:                                           ; preds = %cond42
+  %load_var50 = load i32, i32* %i_store, align 4
+  %call_tmp51 = call i32 @writeln(i32 %load_var50)
+  %load_var52 = load i32, i32* %n_store, align 4
+  %load_var53 = load i32, i32* %i_store, align 4
+  %div_tmp54 = sdiv exact i32 %load_var52, %load_var53
+  store i32 %div_tmp54, i32* %n_store, align 4
+  br label %cond42
+
+after44:                                          ; preds = %cond42
+  %load_var55 = load i32, i32* %i_store, align 4
+  %add_tmp56 = add i32 %load_var55, 4
+  store i32 %add_tmp56, i32* %i_store, align 4
+  br label %cond22
+
+body59:                                           ; preds = %after24
+  %load_var62 = load i32, i32* %n_store, align 4
+  %call_tmp63 = call i32 @writeln(i32 %load_var62)
+  br label %after61
+
+else60:                                           ; preds = %after24
+  br label %after61
+
+after61:                                          ; preds = %else60, %body59
+  ret void
+}
+
+define i32 @main() {
+entry:
+  call void @factorization(i32 0)
+  call void @factorization(i32 1)
+  call void @factorization(i32 2)
+  call void @factorization(i32 3)
+  call void @factorization(i32 4)
+  call void @factorization(i32 5)
+  call void @factorization(i32 6)
+  call void @factorization(i32 7)
+  call void @factorization(i32 8)
+  call void @factorization(i32 9)
+  call void @factorization(i32 10)
+  call void @factorization(i32 11)
+  call void @factorization(i32 12)
+  call void @factorization(i32 13)
+  call void @factorization(i32 14)
+  call void @factorization(i32 15)
+  call void @factorization(i32 16)
+  call void @factorization(i32 17)
+  call void @factorization(i32 100)
+  call void @factorization(i32 131)
+  call void @factorization(i32 133)
+  ret i32 0
+}

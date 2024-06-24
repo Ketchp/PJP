@@ -438,6 +438,6 @@ uint8_t Lexer::parse_byte_num(uint8_t base, uint8_t value) {
 }
 
 void Lexer::warn(const std::string &value) const {
-    std::cerr << value << " " << current.to_string();
+    std::cerr << value << " " << current.to_string() << std::endl;
 }
 
