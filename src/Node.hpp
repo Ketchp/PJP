@@ -294,6 +294,7 @@ struct SymbolTable {
         llvm::Value *value = nullptr;
         llvm::AllocaInst *store = nullptr;
         llvm::GlobalVariable *global_variable = nullptr;
+        bool used = false;
     };
 
     void add_var(
@@ -361,6 +362,7 @@ struct SymbolTable {
                 .identifier = RETURN_VALUE_IDENTIFIER.identifier,
                 .type = type,
                 .symbol_class = SymbolInfo::Symbol_class::RETURN_VALUE,
+                .used = true,
         });
     }
 
@@ -371,10 +373,12 @@ struct SymbolTable {
         if(variables.contains(identifier))
             throw ParserError{"Parameters must have unique names."};
 
+        bool can_be_unused = identifier.identifier.starts_with('_');
         variables.emplace(identifier, SymbolInfo{
                 .identifier = identifier.identifier,
                 .type = type,
                 .symbol_class = SymbolInfo::Symbol_class::PARAM,
+                .used = can_be_unused
         });
     }
 
@@ -771,6 +775,7 @@ struct IdentifierExpression: public Expression {
         while(table != nullptr) {
             if(table->variables.contains(identifier)) {
                 identifier_info = &table->variables.at(identifier);
+                identifier_info->used = true;
                 return;
             }
 

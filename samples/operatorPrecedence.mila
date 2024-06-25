@@ -1,12 +1,19 @@
 program sortBubble;
 
-const a, b, c, d, e = 1;
+const a, b, c, d, e, g = 1;
 var ARR : array [0 .. 10] of integer;
 
 
 function f(arg: integer): integer;
 begin
     f := arg
+end;
+
+
+procedure not_used_function(_can_be_unused: integer; must_be_used: integer);
+    var not_used_var: real;
+begin
+    write_str('No code');
 end;
 
 

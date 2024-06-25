@@ -114,14 +114,45 @@ std::unique_ptr<Mila> Parser::parse_mila() {
         }
         else {
             match(TokenType::TOK_EOF);
-            if(mila->implementation == nullptr)
-                throw_error("todo");
-            return mila;
+            break;
         }
     }
+
+    if(mila->implementation == nullptr)
+        throw_error("todo");
+
+    _check_unused(*mila, true);
+
+    for(const auto &[func_name, function]:
+                mila->function_type->local_variables->functions)
+        if(!builtins.contains(func_name.identifier))
+            _check_unused(*function, false);
+
+    return mila;
 }
 
+void Parser::_check_unused(const Function &function, bool is_global) {
+    for(const auto &[name, sym_info]:
+            function.function_type->local_variables->variables)
+    {
+        if(sym_info.used)
+            continue;
+        if(builtins.contains(name.identifier))  // we dont have to use all builtins
+            continue;
 
+        std::string class_str;
+        if(sym_info.symbol_class == SYMBOL_CLASS::CONST)
+            class_str = "const";
+        if(sym_info.symbol_class == SYMBOL_CLASS::FUNCTION)
+            class_str = "function";
+        if(sym_info.symbol_class == SYMBOL_CLASS::VAR)
+            class_str = is_global ? "global variable" : "local variable";
+        if(sym_info.symbol_class == SYMBOL_CLASS::PARAM)
+            class_str = "parameter";
+
+        parser_warning("Unused " + class_str + " named " + name.identifier);
+    }
+}
 
 
 std::unique_ptr<Statements> Parser::parse_scope() {

@@ -2,8 +2,9 @@
 source_filename = "sortBubble"
 
 @ARR = common global [11 x i32] zeroinitializer
-@str_literal = private constant [16 x i8] c"No parentheses!\00"
-@str_literal.1 = private constant [18 x i8] c"With parentheses!\00"
+@str_literal = private constant [8 x i8] c"No code\00"
+@str_literal.1 = private constant [16 x i8] c"No parentheses!\00"
+@str_literal.2 = private constant [18 x i8] c"With parentheses!\00"
 
 declare i32 @writeln(i32)
 
@@ -22,6 +23,17 @@ entry:
   store i32 %load_var, i32* %return_store, align 4
   %return_value = load i32, i32* %return_store, align 4
   ret i32 %return_value
+}
+
+define void @not_used_function(i32 %_can_be_unused, i32 %must_be_used) {
+entry:
+  %_can_be_unused_store = alloca i32, align 4
+  store i32 %_can_be_unused, i32* %_can_be_unused_store, align 4
+  %must_be_used_store = alloca i32, align 4
+  store i32 %must_be_used, i32* %must_be_used_store, align 4
+  %not_used_var_store = alloca double, align 8
+  %call_tmp = call i32 @write_str(i8* getelementptr inbounds ([8 x i8], [8 x i8]* @str_literal, i32 0, i32 0))
+  ret void
 }
 
 define i32 @main() {

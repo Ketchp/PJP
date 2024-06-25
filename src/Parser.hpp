@@ -40,6 +40,7 @@ public:
     std::ostream &format_ast(std::ostream &os) const;
 private:
     std::shared_ptr<llvm::Module> _generate();
+    static void _check_unused(const Function &mila, bool is_global);
 
     Token get_token() {
         auto temp = current_token;
