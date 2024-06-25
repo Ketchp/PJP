@@ -1,7 +1,7 @@
 #include "Lexer.hpp"
 
 #include <iostream>
-#include <sstream>
+#include <format>
 
 /***********************
 *   class LexerError   *
@@ -23,117 +23,124 @@ const char *LexerError::what() const noexcept {
 Token Lexer::get_token()
 {
     char c;
-    Pos start;
+    Pos start_position;
 
     bool in_comment = false;
     do {
-        start = current;
-        c = current.read_char();
+        start_position = position;
+        c = read_char();
 
         if(std::cin.eof())
-            return {start, TokenType::TOK_EOF};
+            return {start_position, TokenType::TOK_EOF};
 
         if(c == '/') {
-            c = current.read_char();
+            set_type(CharType::COMMENT);
+            c = read_char();
             if(c != '/')
-                throw_error("Slash '/' must be followed by another slash.");
+                error("Slash '/' must be followed by another slash");
 
             in_comment = true;
         }
         else if(c == '\n') {
+            reset_type();
             in_comment = false;
         }
     } while(isspace(c) || in_comment);
 
     if(c == '(')
-        return {start, TokenType::TOK_BRACE_L};
+        return {start_position, TokenType::TOK_BRACE_L};
     if(c == ')')
-        return {start, TokenType::TOK_BRACE_R};
+        return {start_position, TokenType::TOK_BRACE_R};
     if(c == '[')
-        return {start, TokenType::TOK_SQUARE_BRACE_L};
+        return {start_position, TokenType::TOK_SQUARE_BRACE_L};
     if(c == ']')
-        return {start, TokenType::TOK_SQUARE_BRACE_R};
+        return {start_position, TokenType::TOK_SQUARE_BRACE_R};
     if(c == ';')
-        return {start, TokenType::TOK_SEMICOLON};
+        return {start_position, TokenType::TOK_SEMICOLON};
     if(c == ',')
-        return {start, TokenType::TOK_COMMA};
+        return {start_position, TokenType::TOK_COMMA};
     if(c == '+')
-        return {start, TokenType::TOK_PLUS};
+        return {start_position, TokenType::TOK_PLUS};
     if(c == '-')
-        return {start, TokenType::TOK_MINUS};
+        return {start_position, TokenType::TOK_MINUS};
     if(c == '*')
-        return {start, TokenType::TOK_STAR};
+        return {start_position, TokenType::TOK_STAR};
     if(c == '=')
-        return {start, TokenType::TOK_EQUAL};
+        return {start_position, TokenType::TOK_EQUAL};
 
     if(c == ':') {
         auto n = std::cin.peek();
         if(std::cin.eof() || n != '=')
-            return {start, TokenType::TOK_COLON};
+            return {start_position, TokenType::TOK_COLON};
 
-        current.read_char();
-        return {start, TokenType::TOK_ASSIGN};
+        read_char();
+        return {start_position, TokenType::TOK_ASSIGN};
     }
 
     if(c == '>') {
         auto n = std::cin.peek();
         if(std::cin.eof() || n != '=')
-            return {start, TokenType::TOK_GREATER};
+            return {start_position, TokenType::TOK_GREATER};
 
-        current.read_char();
-        return {start, TokenType::TOK_GREATER_EQUAL};
+        read_char();
+        return {start_position, TokenType::TOK_GREATER_EQUAL};
     }
 
     if(c == '.') {
         auto n = std::cin.peek();
         if(std::cin.eof())
-            return {start, TokenType::TOK_DOT};
+            return {start_position, TokenType::TOK_DOT};
 
         if(n == '.') {
-            current.read_char();
-            return {start, TokenType::TOK_DOT_DOT};
+            read_char();
+            return {start_position, TokenType::TOK_DOT_DOT};
         }
-        if(std::isdigit(n))
-            return parse_real(start, 10, 0, true);
+        if(std::isdigit(n)) {
+            set_type(CharType::NUMBER);
+            auto number = parse_real(start_position, 10, 0, true);
+            reset_type();
+            return number;
+        }
 
-        return {start, TokenType::TOK_DOT};
+        return {start_position, TokenType::TOK_DOT};
     }
 
     if(c == '<') {
         auto n = std::cin.peek();
         if(std::cin.eof())
-            return {start, TokenType::TOK_LESS};
+            return {start_position, TokenType::TOK_LESS};
 
         if(n == '=') {
-            current.read_char();
-            return {start, TokenType::TOK_LESS_EQUAL};
+            read_char();
+            return {start_position, TokenType::TOK_LESS_EQUAL};
         }
         if(n == '>') {
-            current.read_char();
-            return {start, TokenType::TOK_NOT_EQUAL};
+            read_char();
+            return {start_position, TokenType::TOK_NOT_EQUAL};
         }
-        return {start, TokenType::TOK_LESS};
+        return {start_position, TokenType::TOK_LESS};
     }
 
     if(c == '&')
-        return parse_number(start, 8);
+        return parse_number(start_position, 8);
     if(std::isdigit(c))
-        return parse_number(start, 10, char_to_digit(c));
+        return parse_number(start_position, 10, char_to_digit(c));
     if(c == '$')
-        return parse_number(start, 16);
+        return parse_number(start_position, 16);
 
     if(c == '\'')
-        return parse_string(start);
+        return parse_string(start_position);
 
     if(is_identifier_char(c, true))
-        return parse_identifier_kw(start, c);
+        return parse_identifier_kw(start_position, c);
 
-    std::stringstream err_msg;
-    err_msg << "Invalid character '"
-            << c << "'=0x" << std::hex << c
-            << ".";
+    error(std::format("invalid character for token start '{}'(0x{:x})", c, c));
+}
 
-    throw_error(err_msg.str());
+std::ostream &Lexer::print_highlighted(std::ostream &os) const {
+    for(const auto &line: pretty_lines)
+        os << line << '\n';
+    return os;
 }
 
 uint8_t Lexer::parse_digit(uint8_t base) {
@@ -145,18 +152,18 @@ uint8_t Lexer::parse_digit(uint8_t base) {
     if((base == 8 && is_oct_digit(n)) ||
        (base == 10 && std::isdigit(n)) ||
        (base == 16 && std::isxdigit(n))) {
-        current.read_char();
+        read_char();
         return char_to_digit(n);
     }
 
     if(n == '.') {
-        current.read_char();
+        read_char();
         return DIGIT_DOT;
     }
 
     if((base <= 10 && (n == 'e' || n == 'E')) ||
        (base == 16 && (n == 'p' || n == 'P'))) {
-        current.read_char();
+        read_char();
         return DIGIT_EXP;
     }
 
@@ -166,6 +173,13 @@ uint8_t Lexer::parse_digit(uint8_t base) {
 }
 
 Token Lexer::parse_number(Pos start, uint8_t base, Mila_int_T number) {
+    set_type(CharType::NUMBER);
+    auto temp = parse_number_col(start, base, number);
+    reset_type();
+    return temp;
+}
+
+Token Lexer::parse_number_col(Pos start, uint8_t base, Mila_int_T number) {
     if(base == 8 || base == 16) {
         uint8_t digit = parse_digit(base);
 
@@ -174,8 +188,8 @@ Token Lexer::parse_number(Pos start, uint8_t base, Mila_int_T number) {
 
         if(digit >= 16) {
             if(base == 8)
-                throw_error("'&' must be followed by octal number.");
-            throw_error("'$' must be followed by hexadecimal number.");
+                error("'&' must be followed by octal digit");
+            error("'$' must be followed by hexadecimal digit");
         }
         number = digit;
     }
@@ -183,13 +197,13 @@ Token Lexer::parse_number(Pos start, uint8_t base, Mila_int_T number) {
     while(true) {
         uint8_t digit = parse_digit(base);
         if(digit == 0 && number == 0)
-            throw_error("Number literal cannot start by more zeros.");
+            error("number literal cannot start by more zeros");
 
         if(digit == DIGIT_NO)
             return {start, number};
 
         if(digit == DIGIT_IDENT)
-            throw_error("Number can not be followed by identifier character.");
+            error("number can not be followed by identifier character");
 
         if(digit == DIGIT_DOT)
             return parse_real(start, base, static_cast<double>(number), true);
@@ -202,6 +216,13 @@ Token Lexer::parse_number(Pos start, uint8_t base, Mila_int_T number) {
 }
 
 Token Lexer::parse_real(Pos start, uint8_t base, Mila_real_T number, bool contains_digit) {
+    set_type(CharType::NUMBER);
+    auto temp = parse_real_col(start, base, number, contains_digit);
+    reset_type();
+    return temp;
+}
+
+Token Lexer::parse_real_col(Pos start, uint8_t base, Mila_real_T number, bool contains_digit) {
     double position_mult = 1;
     while(true) {
         uint8_t digit = parse_digit(base);
@@ -209,14 +230,14 @@ Token Lexer::parse_real(Pos start, uint8_t base, Mila_real_T number, bool contai
             return {start, number, base};
 
         if(digit == DIGIT_IDENT)
-            throw_error("Number can not be followed by identifier symbol.");
+            error("number can not be followed by identifier character");
 
         if(digit == DIGIT_DOT)
-            throw_error("Number can not contain two decimal points.");
+            error("number can not contain two decimal points");
 
         if(digit == DIGIT_EXP) {
             if(!contains_digit)
-                throw_error("Floating point number literal must contain number in fraction part.");
+                error("floating point number literal must contain number in fraction part");
             return parse_exponent(start, base, number);
         }
 
@@ -233,7 +254,7 @@ Token Lexer::parse_exponent(Pos start, uint8_t base, Mila_real_T number) {
     auto c = std::cin.peek();
 
     if(!std::cin.eof() && (c == '-' || c == '+')) {
-        current.read_char();
+        read_char();
         sign = (c == '-' ? -1 : 1);
     }
 
@@ -243,7 +264,7 @@ Token Lexer::parse_exponent(Pos start, uint8_t base, Mila_real_T number) {
 
         if(digit == DIGIT_NO) {
             if(nothing)
-                throw_error("E|e|P|p in number literal must be followed by exponent.");
+                error("E|e|P|p in number literal must be followed by exponent");
 
             if(base == 16)
                 base = 2;
@@ -251,13 +272,13 @@ Token Lexer::parse_exponent(Pos start, uint8_t base, Mila_real_T number) {
         }
 
         if(digit == DIGIT_IDENT)
-            throw_error("Number literal can not be followed by identifier symbol.");
+            error("number literal can not be followed by identifier symbol");
 
         if(digit == DIGIT_DOT)
-            throw_error("Exponent can not be floating point number.");
+            error("exponent can not be floating point number");
 
         if(digit == DIGIT_EXP)
-            throw_error("Can not contain two exponents in literal.");
+            error("can not contain two exponents in literal");
 
         nothing = false;
         exp = 10 * exp + digit;
@@ -265,20 +286,22 @@ Token Lexer::parse_exponent(Pos start, uint8_t base, Mila_real_T number) {
 }
 
 Token Lexer::parse_string(Pos start) {
+    set_type(CharType::STRING);
+    auto temp = parse_string_col(start);
+    reset_type();
+    return temp;
+}
+
+Token Lexer::parse_string_col(Pos start) {
     std::vector<char> value;
 
     bool escaped = false;
 
     while(true) {
-        char c = current.read_char();
+        char c = read_char();
 
-        if(std::cin.eof()) {
-            std::stringstream ss;
-            ss << "String starting at line " << start.line()
-               << " position " << start.offset()
-               << " was never ended.";
-            throw_error(ss.str());
-        }
+        if(std::cin.eof())
+            error(std::format("string never ended, started at {}:{}", start.line(), start.offset()));
 
         if(escaped) {
             escaped = false;
@@ -316,6 +339,20 @@ Token Lexer::parse_string(Pos start) {
 }
 
 Token Lexer::parse_identifier_kw(Pos start, char c) {
+    set_type(CharType::KEY_OR_ID);
+
+    auto token = parse_identifier_kw_col(start, c);
+
+    if(token.type == TokenType::TOK_IDENTIFIER)
+        set_type(CharType::IDENTIFIER);
+    else
+        set_type(CharType::KEYWORD);
+
+    reset_type();
+    return token;
+}
+
+Token Lexer::parse_identifier_kw_col(Pos start, char c) {
     Mila_string_T word = parse_word(c);
 
     if(word == "begin")
@@ -390,17 +427,17 @@ Mila_string_T Lexer::parse_word(char c) {
         if(std::cin.eof() || !is_identifier_char(c))
             return {word.begin(), word.end()};
 
-        current.read_char();
+        read_char();
         word.push_back(c);
     }
 }
 
 uint8_t Lexer::parse_byte_num(uint8_t base, uint8_t value) {
     if(base == 16) {
-        char c = current.read_char();
+        char c = read_char();
 
         if(std::cin.eof() || !std::isxdigit(c))
-            throw_error("String escape \\x must be followed by hexadecimal number.");
+            error("string escape \\x must be followed by hexadecimal number");
         value = char_to_digit(c);
     }
 
@@ -412,7 +449,7 @@ uint8_t Lexer::parse_byte_num(uint8_t base, uint8_t value) {
            (base == 16 && !std::isxdigit(c)))
             break;
 
-        current.read_char();
+        read_char();
         value <<= base == 16 ? 4 : 3;
         value |= char_to_digit(c);
     }
@@ -437,11 +474,97 @@ uint8_t Lexer::parse_byte_num(uint8_t base, uint8_t value) {
     return c - '0';
 }
 
-[[noreturn]] void Lexer::throw_error(const std::string &value) const {
-    throw LexerError(value + " " + current.to_string());
+char Lexer::read_char() {
+    char c = position.read_char();
+
+    if(std::cin.eof())
+        return c;
+
+    if(c == '\n') {
+        pretty_lines.emplace_back();
+    }
+    else if(col_type == CharType::KEY_OR_ID)
+        word_buffer += c;
+    else
+        pretty_lines.back() += c;
+
+    return c;
+}
+
+[[noreturn]] void Lexer::throw_error(Pos err_pos, const std::string &value) {
+    if(value.empty())
+        throw LexerError{std::format("at line {}:{}.", err_pos.line(), err_pos.offset())};
+    throw LexerError{std::format("at line {}:{} {}.", err_pos.line(), err_pos.offset(), value)};
 }
 
 void Lexer::warn(const std::string &value) const {
-    std::cerr << value << " " << current.to_string() << std::endl;
+    std::cerr << value << " " << position.to_string() << std::endl;
 }
 
+[[noreturn]] void Lexer::error(const std::string &message) {
+    auto error_position = position;
+
+    while(!std::cin.eof() && read_char() != '\n');
+
+    while(pretty_lines.back().empty())
+        pretty_lines.pop_back();
+
+    for(const auto &line: pretty_lines) {
+        std::cerr << line << '\n';
+    }
+
+    auto offset = std::string(std::max(error_position.offset() - 1, 0), ' ');
+
+    std::cerr << offset
+              << ESC_S << COL_RED
+              << '^'
+              << std::string(message.size() - 1, '~')
+              << '\n'
+              << offset
+              << message
+              << ESC_S << COL_RESET
+              << std::endl;
+
+    throw_error(error_position);
+}
+
+
+void Lexer::reset_type() {
+    set_type(CharType::NEUTRAL);
+}
+
+void Lexer::set_type(CharType new_type) {
+    auto &line = pretty_lines.back();
+
+    col_type = new_type;
+    if(col_type == CharType::NEUTRAL) {
+        line += ESC_S + COL_RESET;
+        return;
+    }
+    if(col_type == CharType::KEYWORD) {
+        line += ESC_S + COL_ORANGE + word_buffer;
+        word_buffer = "";
+        return;
+    }
+    if(col_type == CharType::IDENTIFIER) {
+        line += ESC_S + COL_LIGHT + word_buffer;
+        word_buffer = "";
+        return;
+    }
+
+    char last_c = line.back();
+    line.pop_back();
+
+    if(col_type == CharType::NUMBER) {
+        line += ESC_S + COL_BLUE + last_c;
+    }
+    if(col_type == CharType::STRING) {
+        line += ESC_S + COL_GREEN + last_c;
+    }
+    if(col_type == CharType::KEY_OR_ID) {
+        word_buffer += last_c;
+    }
+    if(col_type == CharType::COMMENT) {
+        line += ESC_S + COL_GREY + last_c;
+    }
+}

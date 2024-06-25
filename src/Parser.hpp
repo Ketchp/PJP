@@ -28,12 +28,16 @@ public:
     bool parse() {
         try {
             program = parse_mila();
-        } catch (const ParserError &e) {
+        } catch (const std::exception &e) {
             std::cerr << e.what() << std::endl;
             return false;
         }
 
         return true;
+    }
+
+    std::ostream &print_lexer_output(std::ostream &os) const {
+        return lexer.print_highlighted(os);
     }
 
     std::shared_ptr<llvm::Module> generate();  // generate
@@ -42,7 +46,11 @@ private:
     std::shared_ptr<llvm::Module> _generate();
     static void _check_unused(const Function &mila, bool is_global);
 
+    std::set<TokenType> attempted_matches;
+
     Token get_token() {
+        attempted_matches.clear();  // we successfully matched token
+
         auto temp = current_token;
         current_token = lexer.get_token();
         return temp;
@@ -50,6 +58,7 @@ private:
 
     template<bool required = true>
     Token match(TokenType accept) {
+        attempted_matches.emplace(accept);
         if(current_token.type == accept) {
 //            std::cerr << "Matched: " << current_token << std::endl;
             return get_token();
@@ -59,11 +68,13 @@ private:
 
     template<bool required = true>
     Token match(std::initializer_list<TokenType> accept) {
-        for(auto &&type: accept)
+        for(const auto &type: accept) {
+            attempted_matches.emplace(type);
             if(current_token.type == type) {
 //                std::cerr << "Matched: " << current_token << std::endl;
                 return get_token();
             }
+        }
         return NO_MATCH<required>();
     }
 
@@ -71,11 +82,12 @@ private:
         return match<false>(accept);
     }
 
-    [[nodiscard]] bool peek(TokenType accept) const {
+    [[nodiscard]] bool peek(TokenType accept) {
+        attempted_matches.emplace(accept);
         return current_token.type == accept;
     }
 
-    [[nodiscard]] bool peek(std::initializer_list<TokenType> accept) const {
+    [[nodiscard]] bool peek(std::initializer_list<TokenType> accept) {
         return std::any_of(
                 accept.begin(),
                 accept.end(),

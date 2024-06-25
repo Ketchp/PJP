@@ -13,10 +13,12 @@ int main()
         return 1;
     }
 
+//    parser.print_lexer_output(std::cout);
+
     parser.generate()->print(llvm::outs(), nullptr);
 
-    std::ofstream file{"formatted.mila"};
-    parser.format_ast(file);
+//    std::ofstream file{"formatted.mila"};
+//    parser.format_ast(file);
 //    parser.format_ast(std::cout);
 
     return 0;

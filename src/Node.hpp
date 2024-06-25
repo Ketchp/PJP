@@ -61,7 +61,7 @@ using MvT = Mila_variant_T;
 using Value = llvm::Value *;
 
 
-class ParserError: std::exception {
+class ParserError: public std::exception {
 public:
     explicit ParserError(std::string msg);
 
@@ -70,7 +70,7 @@ private:
     std::string err;
 };
 
-class TypeError: std::exception {
+class TypeError: public std::exception {
 public:
     explicit TypeError(std::string msg)
         : err{std::move(msg)}
@@ -83,7 +83,7 @@ private:
     std::string err;
 };
 
-class GeneratorError: std::exception {
+class GeneratorError: public std::exception {
 public:
     explicit GeneratorError(std::string msg)
         : err{std::move(msg)}
@@ -96,7 +96,7 @@ private:
     std::string err;
 };
 
-class PrinterError: std::exception {
+class PrinterError: public std::exception {
 public:
     explicit PrinterError(std::string msg)
             : err{std::move(msg)}

@@ -1,0 +1,12 @@
+program mila;  // this comment is ok
+
+
+var a : integer;
+    b : real;
+
+begin
+    // @ is not valid char besides comment and string
+    write_str('string');
+
+    a := $g;
+end.

@@ -1,0 +1,9 @@
+program mila;  // this comment is ok
+
+
+var a : integer;  / / but this is not
+    b : real;
+
+begin
+    write_str('string');
+end.

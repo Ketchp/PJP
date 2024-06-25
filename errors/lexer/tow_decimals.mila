@@ -1,0 +1,12 @@
+program mila;  // this comment is ok
+
+
+var IP : integer;
+    b : real;
+
+begin
+    // @ is not valid char besides comment and string
+    write_str('string');
+
+    IP := 127.0.0.1;
+end.

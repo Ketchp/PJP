@@ -1,0 +1,6 @@
+program mila;  // this comment is ok
+
+begin
+    // @ is not valid char besides comment and string
+    write_str('nor\xor');
+end.
