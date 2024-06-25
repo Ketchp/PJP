@@ -468,6 +468,26 @@ CMakeFiles/mila.dir/src/Node.cpp.o: /home/stefan/FIT/PJP/slavkste/src/Node.cpp \
   /usr/include/c++/13/iostream \
   /usr/include/c++/13/istream \
   /usr/include/c++/13/bits/istream.tcc \
+  /usr/include/c++/13/sstream \
+  /usr/include/c++/13/bits/sstream.tcc \
+  /usr/include/c++/13/format \
+  /usr/include/c++/13/array \
+  /usr/include/c++/13/charconv \
+  /usr/include/c++/13/limits \
+  /usr/include/c++/13/locale \
+  /usr/include/c++/13/bits/locale_facets_nonio.h \
+  /usr/include/c++/13/ctime \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/messages_members.h \
+  /usr/include/libintl.h \
+  /usr/include/c++/13/bits/codecvt.h \
+  /usr/include/c++/13/bits/locale_facets_nonio.tcc \
+  /usr/include/c++/13/bits/locale_conv.h \
+  /usr/include/c++/13/optional \
+  /usr/include/c++/13/bits/enable_special_members.h \
+  /usr/include/c++/13/span \
+  /usr/include/c++/13/variant \
+  /usr/include/c++/13/bits/parse_numbers.h \
   /usr/lib/llvm-14/include/llvm/IR/Value.h \
   /usr/lib/llvm-14/include/llvm-c/Types.h \
   /usr/lib/llvm-14/include/llvm-c/DataTypes.h \
@@ -513,9 +533,6 @@ CMakeFiles/mila.dir/src/Node.cpp.o: /home/stefan/FIT/PJP/slavkste/src/Node.cpp \
   /usr/include/c++/13/bits/unordered_map.h \
   /usr/include/c++/13/bits/hashtable.h \
   /usr/include/c++/13/bits/hashtable_policy.h \
-  /usr/include/c++/13/bits/enable_special_members.h \
-  /usr/include/c++/13/array \
-  /usr/include/c++/13/limits \
   /usr/lib/llvm-14/include/llvm/ADT/StringRef.h \
   /usr/lib/llvm-14/include/llvm/ADT/DenseMapInfo.h \
   /usr/lib/llvm-14/include/llvm/IR/Use.h \
@@ -663,11 +680,7 @@ CMakeFiles/mila.dir/src/Node.cpp.o: /home/stefan/FIT/PJP/slavkste/src/Node.cpp \
   /usr/lib/llvm-14/include/llvm/Support/TimeProfiler.h \
   /usr/lib/llvm-14/include/llvm/Support/TypeName.h \
   /home/stefan/FIT/PJP/slavkste/src/Token.hpp \
-  /usr/include/c++/13/variant \
-  /usr/include/c++/13/bits/parse_numbers.h \
-  /usr/include/c++/13/ranges \
-  /usr/include/c++/13/optional \
-  /usr/include/c++/13/span
+  /usr/include/c++/13/ranges
 
 CMakeFiles/mila.dir/src/Parser.cpp.o: /home/stefan/FIT/PJP/slavkste/src/Parser.cpp \
   /usr/include/stdc-predef.h \
@@ -1124,6 +1137,21 @@ CMakeFiles/mila.dir/src/Parser.cpp.o: /home/stefan/FIT/PJP/slavkste/src/Parser.c
   /usr/include/c++/13/map \
   /usr/include/c++/13/bits/stl_map.h \
   /usr/include/c++/13/bits/stl_multimap.h \
+  /usr/include/c++/13/sstream \
+  /usr/include/c++/13/bits/sstream.tcc \
+  /usr/include/c++/13/format \
+  /usr/include/c++/13/charconv \
+  /usr/include/c++/13/locale \
+  /usr/include/c++/13/bits/locale_facets_nonio.h \
+  /usr/include/c++/13/ctime \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/messages_members.h \
+  /usr/include/libintl.h \
+  /usr/include/c++/13/bits/codecvt.h \
+  /usr/include/c++/13/bits/locale_facets_nonio.tcc \
+  /usr/include/c++/13/bits/locale_conv.h \
+  /usr/include/c++/13/optional \
+  /usr/include/c++/13/span \
   /home/stefan/FIT/PJP/slavkste/src/first_follow.hpp
 
 CMakeFiles/mila.dir/src/Token.cpp.o: /home/stefan/FIT/PJP/slavkste/src/Token.cpp \
@@ -1363,8 +1391,7 @@ CMakeFiles/mila.dir/src/Token.cpp.o: /home/stefan/FIT/PJP/slavkste/src/Token.cpp
 
 CMakeFiles/mila.dir/src/main.cpp.o: /home/stefan/FIT/PJP/slavkste/src/main.cpp \
   /usr/include/stdc-predef.h \
-  /home/stefan/FIT/PJP/slavkste/src/Parser.hpp \
-  /usr/include/c++/13/iostream \
+  /usr/include/c++/13/fstream \
   /usr/include/c++/13/bits/requires_hosted.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
@@ -1378,7 +1405,7 @@ CMakeFiles/mila.dir/src/main.cpp.o: /home/stefan/FIT/PJP/slavkste/src/main.cpp \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
   /usr/include/x86_64-linux-gnu/c++/13/bits/cpu_defines.h \
   /usr/include/c++/13/pstl/pstl_config.h \
-  /usr/include/c++/13/ostream \
+  /usr/include/c++/13/istream \
   /usr/include/c++/13/ios \
   /usr/include/c++/13/iosfwd \
   /usr/include/c++/13/bits/stringfwd.h \
@@ -1553,9 +1580,15 @@ CMakeFiles/mila.dir/src/main.cpp.o: /home/stefan/FIT/PJP/slavkste/src/main.cpp \
   /usr/include/x86_64-linux-gnu/c++/13/bits/ctype_inline.h \
   /usr/include/c++/13/bits/locale_facets.tcc \
   /usr/include/c++/13/bits/basic_ios.tcc \
+  /usr/include/c++/13/ostream \
   /usr/include/c++/13/bits/ostream.tcc \
-  /usr/include/c++/13/istream \
   /usr/include/c++/13/bits/istream.tcc \
+  /usr/include/c++/13/bits/codecvt.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
+  /usr/include/c++/13/bits/fstream.tcc \
+  /home/stefan/FIT/PJP/slavkste/src/Parser.hpp \
+  /usr/include/c++/13/iostream \
   /usr/include/c++/13/algorithm \
   /usr/include/c++/13/bits/stl_algo.h \
   /usr/include/c++/13/bits/algorithmfwd.h \
@@ -1815,8 +1848,24 @@ CMakeFiles/mila.dir/src/main.cpp.o: /home/stefan/FIT/PJP/slavkste/src/main.cpp \
   /home/stefan/FIT/PJP/slavkste/src/Node.hpp \
   /usr/include/c++/13/map \
   /usr/include/c++/13/bits/stl_map.h \
-  /usr/include/c++/13/bits/stl_multimap.h
+  /usr/include/c++/13/bits/stl_multimap.h \
+  /usr/include/c++/13/sstream \
+  /usr/include/c++/13/bits/sstream.tcc \
+  /usr/include/c++/13/format \
+  /usr/include/c++/13/charconv \
+  /usr/include/c++/13/locale \
+  /usr/include/c++/13/bits/locale_facets_nonio.h \
+  /usr/include/c++/13/ctime \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h \
+  /usr/include/x86_64-linux-gnu/c++/13/bits/messages_members.h \
+  /usr/include/libintl.h \
+  /usr/include/c++/13/bits/locale_facets_nonio.tcc \
+  /usr/include/c++/13/bits/locale_conv.h \
+  /usr/include/c++/13/optional \
+  /usr/include/c++/13/span
 
+
+/usr/include/c++/13/bits/fstream.tcc:
 
 /home/stefan/FIT/PJP/slavkste/src/main.cpp:
 
@@ -1825,8 +1874,6 @@ CMakeFiles/mila.dir/src/main.cpp.o: /home/stefan/FIT/PJP/slavkste/src/main.cpp \
 /home/stefan/FIT/PJP/slavkste/src/first_follow.hpp:
 
 /home/stefan/FIT/PJP/slavkste/src/Parser.cpp:
-
-/usr/include/c++/13/span:
 
 /usr/lib/llvm-14/include/llvm/IR/PassManagerInternal.h:
 
@@ -1889,6 +1936,8 @@ CMakeFiles/mila.dir/src/main.cpp.o: /home/stefan/FIT/PJP/slavkste/src/main.cpp \
 /usr/lib/llvm-14/include/llvm/IR/InstrTypes.h:
 
 /usr/lib/llvm-14/include/llvm/IR/OperandTraits.h:
+
+/usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h:
 
 /usr/lib/llvm-14/include/llvm/IR/DerivedTypes.h:
 
@@ -1996,10 +2045,6 @@ CMakeFiles/mila.dir/src/main.cpp.o: /home/stefan/FIT/PJP/slavkste/src/main.cpp \
 
 /usr/lib/llvm-14/include/llvm/ADT/StringRef.h:
 
-/usr/lib/llvm-14/include/llvm/IR/PassInstrumentation.h:
-
-/usr/include/c++/13/array:
-
 /usr/include/c++/13/bits/hashtable_policy.h:
 
 /usr/include/c++/13/bits/unordered_map.h:
@@ -2063,6 +2108,28 @@ CMakeFiles/mila.dir/src/main.cpp.o: /home/stefan/FIT/PJP/slavkste/src/main.cpp \
 /usr/lib/llvm-14/include/llvm/IR/GlobalObject.h:
 
 /usr/include/inttypes.h:
+
+/usr/include/c++/13/span:
+
+/usr/include/c++/13/bits/locale_facets_nonio.tcc:
+
+/usr/include/libintl.h:
+
+/usr/include/x86_64-linux-gnu/c++/13/bits/messages_members.h:
+
+/usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h:
+
+/usr/include/c++/13/ctime:
+
+/usr/include/c++/13/locale:
+
+/usr/lib/llvm-14/include/llvm/IR/PassInstrumentation.h:
+
+/usr/include/c++/13/array:
+
+/usr/include/c++/13/fstream:
+
+/usr/include/c++/13/format:
 
 /usr/include/c++/13/pstl/execution_defs.h:
 
@@ -2255,6 +2322,8 @@ CMakeFiles/mila.dir/src/main.cpp.o: /home/stefan/FIT/PJP/slavkste/src/main.cpp \
 /usr/include/math.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
+
+/usr/include/c++/13/charconv:
 
 /usr/include/c++/13/backward/binders.h:
 
@@ -2530,9 +2599,9 @@ CMakeFiles/mila.dir/src/main.cpp.o: /home/stefan/FIT/PJP/slavkste/src/main.cpp \
 
 /usr/include/c++/13/bits/stl_vector.h:
 
-/usr/include/c++/13/optional:
-
 /usr/lib/llvm-14/include/llvm/ADT/Twine.h:
+
+/usr/include/c++/13/optional:
 
 /usr/include/c++/13/bits/vector.tcc:
 
@@ -2568,6 +2637,8 @@ CMakeFiles/mila.dir/src/main.cpp.o: /home/stefan/FIT/PJP/slavkste/src/main.cpp \
 
 /usr/include/c++/13/bits/exception_ptr.h:
 
+/usr/include/c++/13/bits/locale_conv.h:
+
 /usr/include/c++/13/bits/istream.tcc:
 
 /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
@@ -2577,6 +2648,8 @@ CMakeFiles/mila.dir/src/main.cpp.o: /home/stefan/FIT/PJP/slavkste/src/main.cpp \
 /usr/lib/llvm-14/include/llvm/ADT/STLForwardCompat.h:
 
 /usr/include/c++/13/bits/cxxabi_init_exception.h:
+
+/usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h:
 
 /usr/include/c++/13/typeinfo:
 
@@ -2599,6 +2672,8 @@ CMakeFiles/mila.dir/src/main.cpp.o: /home/stefan/FIT/PJP/slavkste/src/main.cpp \
 /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h:
 
 /usr/include/c++/13/bits/streambuf_iterator.h:
+
+/usr/include/c++/13/bits/locale_facets_nonio.h:
 
 /usr/include/x86_64-linux-gnu/bits/confname.h:
 
@@ -2689,6 +2764,8 @@ CMakeFiles/mila.dir/src/main.cpp.o: /home/stefan/FIT/PJP/slavkste/src/main.cpp \
 /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
 
 /usr/include/c++/13/sstream:
+
+/usr/include/c++/13/bits/codecvt.h:
 
 /usr/include/c++/13/bits/stl_tree.h:
 

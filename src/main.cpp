@@ -17,6 +17,7 @@ int main()
 
     std::ofstream file{"formatted.mila"};
     parser.format_ast(file);
+//    parser.format_ast(std::cout);
 
     return 0;
 }

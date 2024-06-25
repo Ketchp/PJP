@@ -113,6 +113,7 @@ private:
 void parser_warning(const std::string &message);
 
 
+constexpr size_t MAX_PRIORITY = 10;
 
 struct FormatConf {
     void enter_scope() {indent += std::string(scope_indent, ' ');};
@@ -120,6 +121,7 @@ struct FormatConf {
 
     std::string indent;
     bool add_newline = false;
+    size_t priority = MAX_PRIORITY;
     constexpr static int scope_indent = 4;
 };
 
@@ -473,6 +475,7 @@ struct Statements: public Statement {
         for(size_t idx = 0; idx < statements.size() - 1; idx++) {
             os << conf.indent;
             conf.add_newline = false;
+            conf.priority = MAX_PRIORITY;
             statements[idx]->print(os, conf) << ";\n";
             if(conf.add_newline) {
                 os << '\n';
@@ -481,6 +484,7 @@ struct Statements: public Statement {
         }
 
         os << conf.indent;
+        conf.priority = MAX_PRIORITY;
         return statements.back()->print(os, conf) << "\n";
     };
 
@@ -936,6 +940,7 @@ struct UnaryExpression: public Expression {
     }
 
     std::ostream &print(std::ostream &os, FormatConf &conf) const override {
+        conf.priority = 2;
         if constexpr (OPERATION == UnaryOp::PLUS) {
             os << "+";
             return child->print(os, conf);
@@ -1038,6 +1043,70 @@ enum class BinaryOp {
     MOD,
     SUBSCRIPT,
 };
+
+constexpr std::string BinaryOp_repr(BinaryOp op) {
+    switch(op) {
+        case BinaryOp::ASSIGN:
+            return ":=";
+        case BinaryOp::OR:
+            return "or";
+        case BinaryOp::AND:
+            return "and";
+        case BinaryOp::EQUAL:
+            return "=";
+        case BinaryOp::NOT_EQUAL:
+            return "<>";
+        case BinaryOp::LESS:
+            return "<";
+        case BinaryOp::LESS_EQUAL:
+            return "<=";
+        case BinaryOp::GREATER:
+            return ">";
+        case BinaryOp::GREATER_EQUAL:
+            return ">=";
+        case BinaryOp::PLUS:
+            return "+";
+        case BinaryOp::MINUS:
+            return "-";
+        case BinaryOp::STAR:
+            return "*";
+        case BinaryOp::DIV:
+            return "div";
+        case BinaryOp::MOD:
+            return "mod";
+        case BinaryOp::SUBSCRIPT:
+            return "[";
+    }
+}
+
+constexpr size_t BinaryOp_priority(BinaryOp op) {
+    switch(op) {
+        case BinaryOp::ASSIGN:
+            return 9;
+        case BinaryOp::OR:
+            return 8;
+        case BinaryOp::AND:
+            return 7;
+        case BinaryOp::EQUAL:
+        case BinaryOp::NOT_EQUAL:
+            return 6;
+        case BinaryOp::LESS:
+        case BinaryOp::LESS_EQUAL:
+        case BinaryOp::GREATER:
+        case BinaryOp::GREATER_EQUAL:
+            return 5;
+        case BinaryOp::PLUS:
+        case BinaryOp::MINUS:
+            return 4;
+        case BinaryOp::STAR:
+        case BinaryOp::DIV:
+        case BinaryOp::MOD:
+            return 3;
+        case BinaryOp::SUBSCRIPT:
+            return 1;
+    }
+}
+
 
 template<BinaryOp OPERATION>
 struct BinaryExpression: public Expression {
@@ -1394,49 +1463,29 @@ struct BinaryExpression: public Expression {
     }
 
     std::ostream & print(std::ostream &os, FormatConf &conf) const override {
-        // todo: parenthesis
+        bool need_parentheses = (conf.priority < BinaryOp_priority(OPERATION));
+
+        if(need_parentheses)
+            os << "(";
+
+        conf.priority = BinaryOp_priority(OPERATION);
         lhs->print(os, conf);
 
         if constexpr(OPERATION == BinaryOp::SUBSCRIPT) {
             os << '[';
+            conf.priority = MAX_PRIORITY;
             rhs->print(os, conf);
             os << ']';
             return os;
         }
 
-        os << ' ';
+        os << ' ' << BinaryOp_repr(OPERATION) << ' ';
 
-        if constexpr(OPERATION == BinaryOp::ASSIGN)
-            os << ":=";
-        if constexpr(OPERATION == BinaryOp::OR)
-            os << "or";
-        if constexpr(OPERATION == BinaryOp::AND)
-            os << "and";
-        if constexpr(OPERATION == BinaryOp::EQUAL)
-            os << '=';
-        if constexpr(OPERATION == BinaryOp::NOT_EQUAL)
-            os << "<>";
-        if constexpr(OPERATION == BinaryOp::LESS)
-            os << '<';
-        if constexpr(OPERATION == BinaryOp::LESS_EQUAL)
-            os << "<=";
-        if constexpr(OPERATION == BinaryOp::GREATER)
-            os << '>';
-        if constexpr(OPERATION == BinaryOp::GREATER_EQUAL)
-            os << ">=";
-        if constexpr(OPERATION == BinaryOp::PLUS)
-            os << '+';
-        if constexpr(OPERATION == BinaryOp::MINUS)
-            os << '-';
-        if constexpr(OPERATION == BinaryOp::STAR)
-            os << '*';
-        if constexpr(OPERATION == BinaryOp::DIV)
-            os << "div";
-        if constexpr(OPERATION == BinaryOp::MOD)
-            os << "mod";
-
-        os << ' ';
+        conf.priority = BinaryOp_priority(OPERATION);
         rhs->print(os, conf);
+
+        if(need_parentheses)
+            os << ")";
         return os;
     }
 
@@ -1534,9 +1583,12 @@ struct CallExpression: public Expression {
         os << '(';
 
         if(!arguments.empty()) {
-            for(size_t idx = 0; idx < arguments.size() - 1; idx++)
+            for(size_t idx = 0; idx < arguments.size() - 1; idx++) {
+                conf.priority = MAX_PRIORITY;
                 arguments[idx]->print(os, conf) << ", ";
+            }
 
+            conf.priority = MAX_PRIORITY;
             arguments.back()->print(os, conf);
         }
 

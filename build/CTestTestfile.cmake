@@ -40,6 +40,8 @@ add_test(compiler:isprime "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT
 set_tests_properties(compiler:isprime PROPERTIES  FIXTURES_SETUP "isprime" _BACKTRACE_TRIPLES "/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;54;add_test;/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;0;")
 add_test(compiler:lexerTest "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/lexerTest.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/lexerTest")
 set_tests_properties(compiler:lexerTest PROPERTIES  FIXTURES_SETUP "lexerTest" _BACKTRACE_TRIPLES "/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;54;add_test;/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;0;")
+add_test(compiler:operatorPrecedence "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/operatorPrecedence.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/operatorPrecedence")
+set_tests_properties(compiler:operatorPrecedence PROPERTIES  FIXTURES_SETUP "operatorPrecedence" _BACKTRACE_TRIPLES "/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;54;add_test;/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;0;")
 add_test(compiler:sortBubble "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/sortBubble.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/sortBubble")
 set_tests_properties(compiler:sortBubble PROPERTIES  FIXTURES_SETUP "sortBubble" _BACKTRACE_TRIPLES "/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;54;add_test;/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;0;")
 add_test(run:arrayMax.run1.out "/usr/bin/cmake" "-D" "executable=/home/stefan/FIT/PJP/slavkste/build/tests/arrayMax" "-D" "expected=/home/stefan/FIT/PJP/slavkste/tests/run/arrayMax.run1.out" "-P" "/home/stefan/FIT/PJP/slavkste/tests/run_test.cmake")

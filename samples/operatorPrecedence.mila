@@ -1,0 +1,24 @@
+program sortBubble;
+
+const a, b, c, d, e = 1;
+var ARR : array [0 .. 10] of integer;
+
+
+function f(arg: integer): integer;
+begin
+    f := arg
+end;
+
+
+begin
+    ARR[1] := 100;
+    ARR[2] := 200;
+    ARR[3] := 300;
+
+    'No parentheses!';
+    writeln(-ARR[c + d - e * -a] + --a + b * f(c) mod b div d);
+
+    'With parentheses!';
+    writeln(-ARR[(c + d - e) * --a] + (--a + b) * f(c) mod b div d);
+    writeln(-ARR[2 + (d - e) * -a] + (--a + b * f(c)) mod b div d);
+end.

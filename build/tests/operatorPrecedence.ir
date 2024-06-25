@@ -1,0 +1,59 @@
+; ModuleID = 'sortBubble'
+source_filename = "sortBubble"
+
+@ARR = common global [11 x i32] zeroinitializer
+@str_literal = private constant [16 x i8] c"No parentheses!\00"
+@str_literal.1 = private constant [18 x i8] c"With parentheses!\00"
+
+declare i32 @writeln(i32)
+
+declare i32 @write(i32)
+
+declare i32 @write_str(i8*)
+
+declare i32 @readln(i32*)
+
+define i32 @f(i32 %arg) {
+entry:
+  %return_store = alloca i32, align 4
+  %arg_store = alloca i32, align 4
+  store i32 %arg, i32* %arg_store, align 4
+  %load_var = load i32, i32* %arg_store, align 4
+  store i32 %load_var, i32* %return_store, align 4
+  %return_value = load i32, i32* %return_store, align 4
+  ret i32 %return_value
+}
+
+define i32 @main() {
+entry:
+  store i32 100, i32* getelementptr inbounds ([11 x i32], [11 x i32]* @ARR, i32 0, i32 1), align 4
+  store i32 200, i32* getelementptr inbounds ([11 x i32], [11 x i32]* @ARR, i32 0, i32 2), align 4
+  store i32 300, i32* getelementptr inbounds ([11 x i32], [11 x i32]* @ARR, i32 0, i32 3), align 4
+  %dereference = load i32, i32* getelementptr inbounds ([11 x i32], [11 x i32]* @ARR, i32 0, i32 3), align 4
+  %0 = sub i32 0, %dereference
+  %add_tmp = add i32 %0, 1
+  %call_tmp = call i32 @f(i32 1)
+  %mul_tmp = mul i32 1, %call_tmp
+  %rem_tmp = srem i32 %mul_tmp, 1
+  %div_tmp = sdiv exact i32 %rem_tmp, 1
+  %add_tmp1 = add i32 %add_tmp, %div_tmp
+  %call_tmp2 = call i32 @writeln(i32 %add_tmp1)
+  %dereference3 = load i32, i32* getelementptr inbounds ([11 x i32], [11 x i32]* @ARR, i32 0, i32 1), align 4
+  %1 = sub i32 0, %dereference3
+  %call_tmp4 = call i32 @f(i32 1)
+  %mul_tmp5 = mul i32 2, %call_tmp4
+  %rem_tmp6 = srem i32 %mul_tmp5, 1
+  %div_tmp7 = sdiv exact i32 %rem_tmp6, 1
+  %add_tmp8 = add i32 %1, %div_tmp7
+  %call_tmp9 = call i32 @writeln(i32 %add_tmp8)
+  %dereference10 = load i32, i32* getelementptr inbounds ([11 x i32], [11 x i32]* @ARR, i32 0, i32 2), align 4
+  %2 = sub i32 0, %dereference10
+  %call_tmp11 = call i32 @f(i32 1)
+  %mul_tmp12 = mul i32 1, %call_tmp11
+  %add_tmp13 = add i32 1, %mul_tmp12
+  %rem_tmp14 = srem i32 %add_tmp13, 1
+  %div_tmp15 = sdiv exact i32 %rem_tmp14, 1
+  %add_tmp16 = add i32 %2, %div_tmp15
+  %call_tmp17 = call i32 @writeln(i32 %add_tmp16)
+  ret i32 0
+}
