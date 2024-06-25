@@ -197,14 +197,15 @@ struct Type {
 
     static std::shared_ptr<Type> VOID();
     static std::shared_ptr<Type> INT();
+    static std::shared_ptr<Type> REAL();
     static std::shared_ptr<Type> STRING();
 
     T type;
 
     static std::shared_ptr<Type> TypeVoid;
     static std::shared_ptr<Type> TypeInt;
+    static std::shared_ptr<Type> TypeReal;
     static std::shared_ptr<Type> TypeString;
-//    static std::shared_ptr<Type> TypeReal;
 };
 
 
@@ -780,7 +781,14 @@ struct CastExpression: public Expression {
     ):
         type{std::move(cast_type)},
         child{std::move(expression)}
-    {}
+    {
+        _check_type();
+    }
+
+    void _check_type() const {
+        if(!child->get_type()->is_numeric() || !type->is_numeric())
+            throw GeneratorError{"Non numeric cast not supported."};
+    }
 
     [[nodiscard]] Mila_variant_T get_value() const override {
         return {};  // todo
@@ -846,10 +854,10 @@ struct BinaryExpression: public Expression {
         : lhs{std::move(lhs)},
           rhs{std::move(rhs)}
     {
-        _check_type();
+        _fix_type();
     }
 
-    void _check_type() {
+    void _fix_type() {
         auto l_type = lhs->get_type();
         auto r_type = rhs->get_type();
 
@@ -861,17 +869,24 @@ struct BinaryExpression: public Expression {
 
         if constexpr (OPERATION == BinaryOp::ASSIGN) {
             if(*l_type != *r_type)
-                throw TypeError{"TODO"};  // todo implicit conversion for real / int types
+                rhs = std::make_unique<CastExpression>(l_type, std::move(rhs));
         }
         else if constexpr (
                 OPERATION == BinaryOp::OR ||
                 OPERATION == BinaryOp::AND ||
                 OPERATION == BinaryOp::EQUAL ||
-                OPERATION == BinaryOp::NOT_EQUAL ||
-                OPERATION == BinaryOp::MOD
+                OPERATION == BinaryOp::NOT_EQUAL
         ) {
             if(!l_type->is_int() || !r_type->is_int())
-                throw TypeError{"TODO"};
+                throw TypeError{"Logical operators can not be implicitly casted."};
+        }
+        else if constexpr (
+                OPERATION == BinaryOp::MOD
+        ) {
+            if(!l_type->is_int())
+                lhs = std::make_unique<CastExpression>(Type::INT(), std::move(lhs));
+            if(!r_type->is_int())
+                rhs = std::make_unique<CastExpression>(Type::INT(), std::move(rhs));
         }
         else if constexpr (
                 OPERATION == BinaryOp::LESS ||
@@ -883,13 +898,20 @@ struct BinaryExpression: public Expression {
                 OPERATION == BinaryOp::STAR ||
                 OPERATION == BinaryOp::DIV
         ) {
-            // todo implicit conversion for these operations
-            if(!l_type->is_numeric() || !r_type->is_numeric() || *l_type != *r_type)
-                throw TypeError{"TODO"};
+            if(!l_type->is_numeric() || !r_type->is_numeric())
+                throw TypeError{"Operation not supported for non-numeric types."};
+
+            // both are numbers and at least one is real number
+            bool fp_op = l_type->is_real() || r_type->is_real();
+
+            if(fp_op && l_type->is_int())
+                lhs = std::make_unique<CastExpression>(Type::REAL(), std::move(lhs));
+            if(fp_op && r_type->is_int())
+                rhs = std::make_unique<CastExpression>(Type::REAL(), std::move(rhs));
         }
         else if constexpr (OPERATION == BinaryOp::SUBSCRIPT) {
             if(!l_type->is_array() || !r_type->is_int())
-                throw TypeError{"TODO"};
+                throw TypeError{"Subscript can only be made on array with integer index."};
         }
         else
             throw ParserError{"TODO"};  // unreachable
@@ -1195,7 +1217,21 @@ struct CallExpression: public Expression {
     }
 
     void _check_type() {
+        auto func = std::dynamic_pointer_cast<FunctionType>(function->get_type());
 
+        if(func->parameter_types.size() != arguments.size())
+            throw ParserError{"Function called with wrong number of arguments."};
+
+        // readln is treated specially
+        if(func->function_name.identifier == "readln")
+            return;
+
+        for(size_t idx = 0; idx < arguments.size(); idx++) {
+            auto &argument = arguments[idx];
+            auto &req_type = func->parameter_types[idx].first;
+            if(*argument->get_type() != *req_type)
+                argument = std::make_unique<CastExpression>(req_type, std::move(argument));
+        }
     }
 
     [[nodiscard]] Mila_variant_T get_value() const override {

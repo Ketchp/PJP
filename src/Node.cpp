@@ -26,6 +26,7 @@ Type::Type(T type)
 
 std::shared_ptr<Type> Type::TypeVoid{};
 std::shared_ptr<Type> Type::TypeInt{};
+std::shared_ptr<Type> Type::TypeReal{};
 std::shared_ptr<Type> Type::TypeString{};
 
 std::shared_ptr<Type> Type::VOID() {
@@ -38,6 +39,12 @@ std::shared_ptr<Type> Type::INT() {
     if(!TypeInt)
         TypeInt = std::make_shared<Type>(Type::T::INT_T);
     return TypeInt;
+}
+
+std::shared_ptr<Type> Type::REAL() {
+    if(!TypeReal)
+        TypeReal = std::make_shared<Type>(Type::T::REAL_T);
+    return TypeReal;
 }
 
 std::shared_ptr<Type> Type::STRING() {
