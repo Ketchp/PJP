@@ -37,7 +37,7 @@ public:
     }
 
     std::shared_ptr<llvm::Module> generate();  // generate
-
+    std::ostream &format_ast(std::ostream &os) const;
 private:
     std::shared_ptr<llvm::Module> _generate();
 

@@ -8,6 +8,13 @@ Parser::Parser()
     : current_token{lexer.get_token()}
 {}
 
+std::ostream &Parser::format_ast(std::ostream &os) const {
+    if(program == nullptr)
+        throw ParserError{"Program not parsed yet."};
+
+    FormatConf conf;
+    return program->format_mila(os, conf);
+}
 
 template<>
 Token Parser::NO_MATCH<true>() {
@@ -641,21 +648,6 @@ std::shared_ptr<llvm::Module> Parser::generate() {
 
     return nullptr;
 }
-
-
-static std::set<std::string> builtins{
-    // external fce.c
-    "writeln",
-    "write",
-    "write_str",
-    "readln",
-
-    // main function
-    "main",
-
-    // helper functions
-    "dec",
-};
 
 bool is_builtin_function(const Identifier &id) {
     return builtins.contains(id.identifier);

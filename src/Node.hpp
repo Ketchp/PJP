@@ -6,6 +6,8 @@
 #include <memory>
 #include <list>
 #include <iostream>
+#include <sstream>
+#include <format>
 
 #include "llvm/IR/Value.h"
 #include "llvm/IR/IRBuilder.h"
@@ -36,6 +38,21 @@
 template<class... Ts>
 struct overloaded : Ts... {
     using Ts::operator()...;
+};
+
+
+static std::set<std::string> builtins{
+        // external fce.c
+        "writeln",
+        "write",
+        "write_str",
+        "readln",
+
+        // main function
+        "main",
+
+        // helper functions
+        "dec",
 };
 
 
@@ -79,9 +96,35 @@ private:
     std::string err;
 };
 
+class PrinterError: std::exception {
+public:
+    explicit PrinterError(std::string msg)
+            : err{std::move(msg)}
+    {};
+
+    [[nodiscard]] const char * what() const noexcept override {
+        return err.c_str();
+    }
+private:
+    std::string err;
+};
+
 
 void parser_warning(const std::string &message);
 
+
+
+struct FormatConf {
+    void enter_scope() {indent += std::string(scope_indent, ' ');};
+    void leave_scope() {indent.resize(indent.size() - scope_indent);};
+
+    std::string indent;
+    bool add_newline = false;
+    constexpr static int scope_indent = 4;
+};
+
+// escapes C string to Mila source code string including ''
+std::string escape_string(const std::string &original);
 
 
 struct Identifier {
@@ -94,6 +137,9 @@ struct Identifier {
 
     std::string identifier;
 };
+
+std::ostream &operator<<(std::ostream &os, const Identifier &name);
+std::ostream &operator<<(std::ostream &os, const std::vector<Identifier> &names);
 
 const Identifier RETURN_VALUE_IDENTIFIER{"__return_value__"};
 
@@ -164,6 +210,10 @@ struct Type {
         return is_int() || is_real();
     }
 
+    [[nodiscard]] bool is_trivial() const {
+        return is_numeric() || is_string();
+    }
+
     [[nodiscard]] bool is_array() const {
         return type == T::ARRAY_T;
     }
@@ -195,6 +245,16 @@ struct Type {
         return nullptr;
     }
 
+    virtual std::ostream &print(std::ostream &os, FormatConf &) const {
+        if(type == T::INT_T)
+            return os << "integer";
+        if(type == T::REAL_T)
+            return os << "real";
+        if(type == T::STRING_T)
+            return os << "string";
+        throw PrinterError{"Could not print type."};
+    }
+
     static std::shared_ptr<Type> VOID();
     static std::shared_ptr<Type> INT();
     static std::shared_ptr<Type> REAL();
@@ -206,6 +266,8 @@ struct Type {
     static std::shared_ptr<Type> TypeInt;
     static std::shared_ptr<Type> TypeReal;
     static std::shared_ptr<Type> TypeString;
+
+    friend auto operator<=>(const Type&, const Type&);
 };
 
 
@@ -319,6 +381,10 @@ struct SymbolTable {
             const std::shared_ptr<FunctionType> &definition
     );
 
+    std::ostream &print_forward(std::ostream &os, FormatConf &conf) const;
+    std::ostream &print_implementations(std::ostream &os, FormatConf &conf) const;
+    std::ostream &print_var_const(std::ostream &os, FormatConf &conf) const;
+
     std::map<Identifier, SymbolInfo> variables;
     std::map<Identifier, std::shared_ptr<Function>> functions;
     std::shared_ptr<SymbolTable> global_table;
@@ -350,6 +416,11 @@ struct TypeArray: public Type {
         );
     }
 
+    std::ostream & print(std::ostream &os, FormatConf &conf) const override {
+        os << "array [" << array_start << " .. " << array_end << "] of ";
+        return element_type->print(os, conf);
+    }
+
     std::shared_ptr<Type> element_type;
     Mila_int_T array_start, array_end;
 };
@@ -358,8 +429,6 @@ struct TypeArray: public Type {
 struct DescentData {
     std::vector<std::pair<llvm::BasicBlock *, llvm::BasicBlock *>> continue_break_BBs;
 };
-
-
 
 struct Statement {
     virtual ~Statement() = default;
@@ -370,8 +439,15 @@ struct Statement {
     [[nodiscard]] virtual llvm::Value *get_store(llvm::IRBuilder<> &, llvm::Module &, DescentData &) const {
         throw GeneratorError{"No AllocaInst."};
     };
+
+    virtual std::ostream &print(std::ostream &os, FormatConf &conf) const = 0;
 };
 
+
+//std::ostream &operator<<(std::ostream &os, const Statement &stmt) {
+//    stmt.print();
+//    return
+//}
 
 struct Statements: public Statement {
     using statement_vector_T = std::vector<std::unique_ptr<Statement>>;
@@ -390,10 +466,34 @@ struct Statements: public Statement {
         return nullptr;
     };
 
+    std::ostream &print(std::ostream &os, FormatConf &conf) const override {
+        if(statements.empty())
+            return os;
+
+        for(size_t idx = 0; idx < statements.size() - 1; idx++) {
+            os << conf.indent;
+            conf.add_newline = false;
+            statements[idx]->print(os, conf) << ";\n";
+            if(conf.add_newline) {
+                os << '\n';
+                conf.add_newline = false;
+            }
+        }
+
+        os << conf.indent;
+        return statements.back()->print(os, conf) << "\n";
+    };
+
     statement_vector_T statements;
 };
 
-using parameter_list_T = std::vector<std::pair<std::shared_ptr<Type>, Identifier>>;
+using param_pair_T = std::pair<std::shared_ptr<Type>, Identifier>;
+using parameter_list_T = std::vector<param_pair_T>;
+
+
+std::ostream &operator<<(std::ostream &os, const param_pair_T &param);
+std::ostream &operator<<(std::ostream &os, const parameter_list_T &params);
+
 
 struct FunctionType: public Type {
     FunctionType(
@@ -447,6 +547,25 @@ struct FunctionType: public Type {
         }
 
         return llvm_function;
+    }
+
+    std::ostream &print_head(std::ostream &os, FormatConf &conf) const {
+        bool is_procedure = return_type->is_void();
+
+        os << (is_procedure ? "procedure " : "function ");
+        os << function_name << '(' << parameter_types << ')';
+
+        if(!is_procedure) {
+            os << ": ";
+            return_type->print(os, conf);
+        }
+
+        os << ";";
+        return os;
+    }
+
+    std::ostream &print_var_const(std::ostream &os, FormatConf &conf) const {
+        return local_variables->print_var_const(os, conf);
     }
 
     std::shared_ptr<Type> return_type;
@@ -527,6 +646,30 @@ struct Function {
         return llvm_function;
     }
 
+    std::ostream &print_forward(std::ostream &os, FormatConf &conf) const {
+        print_head(os, conf);
+        return os << " forward;";
+    }
+
+    std::ostream &print_implementation(std::ostream &os, FormatConf &conf) const {
+        print_head(os, conf);
+        os << '\n';
+        conf.enter_scope();
+        function_type->print_var_const(os, conf);
+        os << "begin\n";
+
+        implementation->print(os, conf);
+
+        conf.leave_scope();
+        os << "end;\n";
+
+        return os;
+    }
+
+    std::ostream &print_head(std::ostream &os, FormatConf &conf) const {
+        return function_type->print_head(os, conf);
+    }
+
     std::shared_ptr<FunctionType> function_type;
     std::unique_ptr<Statements> implementation;
 };
@@ -592,6 +735,24 @@ struct LiteralExpression: public Expression {
                     );
                 }
         }, value);
+    }
+
+    std::ostream & print(std::ostream &os, FormatConf &) const override {
+        std::visit(overloaded{
+            [&](std::monostate) {throw PrinterError{"Literal does not contain value"};},
+            [&](Mila_int_T v){os << v;},
+            [&](Mila_real_T v){
+                auto repr = std::format("{}", v);
+                if(std::isfinite(v) &&
+                   repr.find('.') == std::string::npos &&
+                   repr.find('e') == std::string::npos
+                )
+                    repr += ".0";
+                os << repr;
+            },
+            [&](const Mila_string_T &v) {os << escape_string(v);},
+        }, value);
+        return os;
     }
 
     Mila_variant_T value;
@@ -678,6 +839,10 @@ struct IdentifierExpression: public Expression {
 
     llvm::Value *get_address(llvm::IRBuilder<> &, const llvm::Module &) const override {
         return identifier_info->global_variable;
+    }
+
+    std::ostream & print(std::ostream &os, FormatConf &) const override {
+        return os << identifier_info->identifier;
     }
 
     SymbolTable::SymbolInfo *identifier_info;
@@ -770,6 +935,21 @@ struct UnaryExpression: public Expression {
         throw GeneratorError{"Type not supported for unary operation"};
     }
 
+    std::ostream &print(std::ostream &os, FormatConf &conf) const override {
+        if constexpr (OPERATION == UnaryOp::PLUS) {
+            os << "+";
+            return child->print(os, conf);
+        }
+        if constexpr (OPERATION == UnaryOp::MINUS) {
+            os << "-";
+            return child->print(os, conf);
+        }
+        if constexpr (OPERATION == UnaryOp::NOT) {
+            os << "not ";
+            return child->print(os, conf);
+        }
+    }
+
     std::unique_ptr<Expression> child;
 };
 
@@ -777,10 +957,12 @@ struct UnaryExpression: public Expression {
 struct CastExpression: public Expression {
     CastExpression(
             std::shared_ptr<Type> cast_type,
-            std::unique_ptr<Expression> expression
+            std::unique_ptr<Expression> expression,
+            bool is_implicit = false
     ):
         type{std::move(cast_type)},
-        child{std::move(expression)}
+        child{std::move(expression)},
+        is_implicit{is_implicit}
     {
         _check_type();
     }
@@ -824,8 +1006,18 @@ struct CastExpression: public Expression {
         throw GeneratorError{"Type cast not supported for type."};
     }
 
+    std::ostream & print(std::ostream &os, FormatConf &conf) const override {
+        if(!is_implicit) {  // is_explicit
+            os << "(";
+            type->print(os, conf);
+            os << ")";
+        }
+        return child->print(os, conf);
+    }
+
     std::shared_ptr<Type> type;
     std::shared_ptr<Expression> child;
+    bool is_implicit;
 };
 
 
@@ -869,7 +1061,7 @@ struct BinaryExpression: public Expression {
 
         if constexpr (OPERATION == BinaryOp::ASSIGN) {
             if(*l_type != *r_type)
-                rhs = std::make_unique<CastExpression>(l_type, std::move(rhs));
+                rhs = std::make_unique<CastExpression>(l_type, std::move(rhs), true);
         }
         else if constexpr (
                 OPERATION == BinaryOp::OR ||
@@ -884,9 +1076,9 @@ struct BinaryExpression: public Expression {
                 OPERATION == BinaryOp::MOD
         ) {
             if(!l_type->is_int())
-                lhs = std::make_unique<CastExpression>(Type::INT(), std::move(lhs));
+                lhs = std::make_unique<CastExpression>(Type::INT(), std::move(lhs), true);
             if(!r_type->is_int())
-                rhs = std::make_unique<CastExpression>(Type::INT(), std::move(rhs));
+                rhs = std::make_unique<CastExpression>(Type::INT(), std::move(rhs), true);
         }
         else if constexpr (
                 OPERATION == BinaryOp::LESS ||
@@ -905,9 +1097,9 @@ struct BinaryExpression: public Expression {
             bool fp_op = l_type->is_real() || r_type->is_real();
 
             if(fp_op && l_type->is_int())
-                lhs = std::make_unique<CastExpression>(Type::REAL(), std::move(lhs));
+                lhs = std::make_unique<CastExpression>(Type::REAL(), std::move(lhs), true);
             if(fp_op && r_type->is_int())
-                rhs = std::make_unique<CastExpression>(Type::REAL(), std::move(rhs));
+                rhs = std::make_unique<CastExpression>(Type::REAL(), std::move(rhs), true);
         }
         else if constexpr (OPERATION == BinaryOp::SUBSCRIPT) {
             if(!l_type->is_array() || !r_type->is_int())
@@ -1201,6 +1393,53 @@ struct BinaryExpression: public Expression {
         throw GeneratorError{"get_store not supported for operation."};
     }
 
+    std::ostream & print(std::ostream &os, FormatConf &conf) const override {
+        // todo: parenthesis
+        lhs->print(os, conf);
+
+        if constexpr(OPERATION == BinaryOp::SUBSCRIPT) {
+            os << '[';
+            rhs->print(os, conf);
+            os << ']';
+            return os;
+        }
+
+        os << ' ';
+
+        if constexpr(OPERATION == BinaryOp::ASSIGN)
+            os << ":=";
+        if constexpr(OPERATION == BinaryOp::OR)
+            os << "or";
+        if constexpr(OPERATION == BinaryOp::AND)
+            os << "and";
+        if constexpr(OPERATION == BinaryOp::EQUAL)
+            os << '=';
+        if constexpr(OPERATION == BinaryOp::NOT_EQUAL)
+            os << "<>";
+        if constexpr(OPERATION == BinaryOp::LESS)
+            os << '<';
+        if constexpr(OPERATION == BinaryOp::LESS_EQUAL)
+            os << "<=";
+        if constexpr(OPERATION == BinaryOp::GREATER)
+            os << '>';
+        if constexpr(OPERATION == BinaryOp::GREATER_EQUAL)
+            os << ">=";
+        if constexpr(OPERATION == BinaryOp::PLUS)
+            os << '+';
+        if constexpr(OPERATION == BinaryOp::MINUS)
+            os << '-';
+        if constexpr(OPERATION == BinaryOp::STAR)
+            os << '*';
+        if constexpr(OPERATION == BinaryOp::DIV)
+            os << "div";
+        if constexpr(OPERATION == BinaryOp::MOD)
+            os << "mod";
+
+        os << ' ';
+        rhs->print(os, conf);
+        return os;
+    }
+
     std::unique_ptr<Expression> lhs, rhs;
 };
 
@@ -1230,7 +1469,7 @@ struct CallExpression: public Expression {
             auto &argument = arguments[idx];
             auto &req_type = func->parameter_types[idx].first;
             if(*argument->get_type() != *req_type)
-                argument = std::make_unique<CastExpression>(req_type, std::move(argument));
+                argument = std::make_unique<CastExpression>(req_type, std::move(argument), true);
         }
     }
 
@@ -1288,6 +1527,21 @@ struct CallExpression: public Expression {
             return nullptr;
         }
         throw GeneratorError{"Function 'dec' supported only for integers."};
+    }
+
+    std::ostream & print(std::ostream &os, FormatConf &conf) const override {
+        function->print(os, conf);
+        os << '(';
+
+        if(!arguments.empty()) {
+            for(size_t idx = 0; idx < arguments.size() - 1; idx++)
+                arguments[idx]->print(os, conf) << ", ";
+
+            arguments.back()->print(os, conf);
+        }
+
+        os << ')';
+        return os;
     }
 
     std::shared_ptr<Expression> function;
@@ -1348,6 +1602,29 @@ struct IfStatement: public Statement {
         return nullptr;
     }
 
+    std::ostream & print(std::ostream &os, FormatConf &conf) const override {
+        os << "if ";
+        condition->print(os, conf);
+        os << " then\n" << conf.indent;
+
+        os << "begin\n";
+        conf.enter_scope();
+
+        body_if->print(os, conf);
+
+        if(body_else) {
+            conf.leave_scope();
+            os << conf.indent << "else\n";
+            conf.enter_scope();
+            body_else->print(os, conf);
+        }
+
+        conf.leave_scope();
+        os << conf.indent << "end";
+        conf.add_newline = true;
+        return os;
+    }
+
     std::unique_ptr<Expression> condition;
     std::unique_ptr<Statements> body_if;
     std::unique_ptr<Statements> body_else;
@@ -1399,6 +1676,19 @@ struct WhileStatement: public Statement {
         builder.SetInsertPoint(after_BB);
 
         return nullptr;
+    }
+
+    std::ostream & print(std::ostream &os, FormatConf &conf) const override {
+        os << "while ";
+        condition->print(os, conf);
+        os << " do\n" << conf.indent;
+        os << "begin\n";
+        conf.enter_scope();
+        body->print(os, conf);
+        conf.leave_scope();
+        os << conf.indent << "end";
+        conf.add_newline = true;
+        return os;
     }
 
     std::unique_ptr<Expression> condition;
@@ -1492,6 +1782,27 @@ struct ForStatement: public Statement {
         return nullptr;
     }
 
+    std::ostream & print(std::ostream &os, FormatConf &conf) const override {
+        os << "for ";
+        init->print(os, conf);
+
+        if(increment)
+            os << " to ";
+        else
+            os << " downto ";
+
+        stop_condition->print(os, conf);
+
+        os << " do\n" << conf.indent;
+        os << "begin\n";
+        conf.enter_scope();
+        body->print(os, conf);
+        conf.leave_scope();
+        os << conf.indent << "end";
+        conf.add_newline = true;
+        return os;
+    }
+
     std::unique_ptr<Expression> init;
     std::unique_ptr<Expression> stop_condition;
     std::unique_ptr<Statements> body;
@@ -1519,6 +1830,10 @@ struct ExitStatement: public Statement {
         return nullptr;
     }
 
+    std::ostream & print(std::ostream &os, FormatConf &) const override {
+        return os << "exit";
+    }
+
     SymbolTable::SymbolInfo *return_info;
 };
 
@@ -1536,6 +1851,10 @@ struct ContinueStatement: public Statement {
 
         return nullptr;
     }
+
+    std::ostream & print(std::ostream &os, FormatConf &) const override {
+        return os << "continue";
+    }
 };
 
 struct BreakStatement: public Statement {
@@ -1552,6 +1871,9 @@ struct BreakStatement: public Statement {
 
         return nullptr;
     }
+    std::ostream & print(std::ostream &os, FormatConf &) const override {
+        return os << "break";
+    }
 };
 
 struct Mila: public Function {
@@ -1566,6 +1888,26 @@ struct Mila: public Function {
           },
           program_name{std::move(name)}
     {}
+
+    std::ostream &format_mila(std::ostream &os, FormatConf &conf) const {
+        os << "program " << program_name << ";\n\n";
+
+        // forward declarations for all functions / procedures
+        function_type->local_variables->print_forward(os, conf);
+
+        // variables and constants
+        function_type->local_variables->print_var_const(os, conf);
+
+        os << "begin" << '\n';
+        conf.enter_scope();
+        implementation->print(os, conf);
+        conf.leave_scope();
+        os << conf.indent << "end." << "\n\n";
+
+        function_type->local_variables->print_implementations(os, conf);
+
+        return os;
+    }
 
     std::string program_name;
 };

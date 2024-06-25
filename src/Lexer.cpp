@@ -282,7 +282,7 @@ Token Lexer::parse_string(Pos start) {
 
         if(escaped) {
             escaped = false;
-            if(c == 'a')       value.push_back('\a');
+            if(c == 'a')       value.push_back('\a');  // abfnrtv\'"?
             else if(c == 'b')  value.push_back('\b');
             else if(c == 'f')  value.push_back('\f');
             else if(c == 'n')  value.push_back('\n');

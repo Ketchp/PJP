@@ -1,9 +1,11 @@
+#include <fstream>
+
 #include "Parser.hpp"
 #include "Node.hpp"
 
 // Use tutorials in: https://llvm.org/docs/tutorial/
 
-int main (int argc, char *argv[])
+int main()
 {
     Parser parser;
 
@@ -12,6 +14,9 @@ int main (int argc, char *argv[])
     }
 
     parser.generate()->print(llvm::outs(), nullptr);
+
+    std::ofstream file{"formatted.mila"};
+    parser.format_ast(file);
 
     return 0;
 }
