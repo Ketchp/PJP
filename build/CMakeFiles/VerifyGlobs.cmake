@@ -46,6 +46,7 @@ set(OLD_GLOB
   "/home/stefan/FIT/PJP/slavkste/samples/arrayMax.mila"
   "/home/stefan/FIT/PJP/slavkste/samples/arrayTest.mila"
   "/home/stefan/FIT/PJP/slavkste/samples/breakContinue.mila"
+  "/home/stefan/FIT/PJP/slavkste/samples/constantFolding.mila"
   "/home/stefan/FIT/PJP/slavkste/samples/consts.mila"
   "/home/stefan/FIT/PJP/slavkste/samples/explicitCast.mila"
   "/home/stefan/FIT/PJP/slavkste/samples/expressions.mila"

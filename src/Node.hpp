@@ -983,7 +983,23 @@ struct CastExpression: public Expression {
     }
 
     [[nodiscard]] Mila_variant_T get_value() const override {
-        return {};  // todo
+        return std::visit(overloaded{
+            [](auto) -> MvT {return {};},  // if no value return monostate
+            [&](Mila_int_T v) -> MvT {
+                if(type->is_int())
+                    return v;
+                if(type->is_real())
+                    return (Mila_real_T)v;
+                return {};
+            },
+            [&](Mila_real_T v) -> MvT {
+                if(type->is_int())
+                    return (Mila_int_T)v;
+                if(type->is_real())
+                    return v;
+                return {};
+            },
+        }, child->get_value());
     }
 
     [[nodiscard]] std::shared_ptr<Type> get_type() const override {

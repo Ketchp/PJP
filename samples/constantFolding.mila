@@ -1,0 +1,13 @@
+program consts;
+
+const A = 1 + 2;
+      B = -A + 8 * A + 5 div 1;
+      C = A * 100 - 0.1;
+      D = B + (integer)C;
+
+begin
+  writeln(A);
+  writeln(B);
+  writeln(C);
+  writeln(D);
+end.

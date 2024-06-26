@@ -10,6 +10,8 @@ add_test(compiler:arrayTest "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/F
 set_tests_properties(compiler:arrayTest PROPERTIES  FIXTURES_SETUP "arrayTest" _BACKTRACE_TRIPLES "/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;56;add_test;/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;0;")
 add_test(compiler:breakContinue "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/breakContinue.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/breakContinue")
 set_tests_properties(compiler:breakContinue PROPERTIES  FIXTURES_SETUP "breakContinue" _BACKTRACE_TRIPLES "/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;56;add_test;/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;0;")
+add_test(compiler:constantFolding "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/constantFolding.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/constantFolding")
+set_tests_properties(compiler:constantFolding PROPERTIES  FIXTURES_SETUP "constantFolding" _BACKTRACE_TRIPLES "/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;56;add_test;/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;0;")
 add_test(compiler:consts "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/consts.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/consts")
 set_tests_properties(compiler:consts PROPERTIES  FIXTURES_SETUP "consts" _BACKTRACE_TRIPLES "/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;56;add_test;/home/stefan/FIT/PJP/slavkste/CMakeLists.txt;0;")
 add_test(compiler:explicitCast "/home/stefan/FIT/PJP/slavkste/mila" "/home/stefan/FIT/PJP/slavkste/samples/explicitCast.mila" "-o" "/home/stefan/FIT/PJP/slavkste/build/tests/explicitCast")
