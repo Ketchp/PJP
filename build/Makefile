@@ -543,6 +543,30 @@ ContinuousSubmit/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ContinuousSubmit.dir/build.make CMakeFiles/ContinuousSubmit.dir/build
 .PHONY : ContinuousSubmit/fast
 
+src/Color.o: src/Color.cpp.o
+.PHONY : src/Color.o
+
+# target to build an object file
+src/Color.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mila.dir/build.make CMakeFiles/mila.dir/src/Color.cpp.o
+.PHONY : src/Color.cpp.o
+
+src/Color.i: src/Color.cpp.i
+.PHONY : src/Color.i
+
+# target to preprocess a source file
+src/Color.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mila.dir/build.make CMakeFiles/mila.dir/src/Color.cpp.i
+.PHONY : src/Color.cpp.i
+
+src/Color.s: src/Color.cpp.s
+.PHONY : src/Color.s
+
+# target to generate assembly for a file
+src/Color.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mila.dir/build.make CMakeFiles/mila.dir/src/Color.cpp.s
+.PHONY : src/Color.cpp.s
+
 src/Lexer.o: src/Lexer.cpp.o
 .PHONY : src/Lexer.o
 
@@ -704,6 +728,9 @@ help:
 	@echo "... intrinsics_gen"
 	@echo "... omp_gen"
 	@echo "... mila"
+	@echo "... src/Color.o"
+	@echo "... src/Color.i"
+	@echo "... src/Color.s"
 	@echo "... src/Lexer.o"
 	@echo "... src/Lexer.i"
 	@echo "... src/Lexer.s"

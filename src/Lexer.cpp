@@ -137,11 +137,26 @@ Token Lexer::get_token()
     error(std::format("invalid character for token start '{}'(0x{:x})", c, c));
 }
 
-std::ostream &Lexer::print_highlighted(std::ostream &os) const {
-    for(const auto &line: pretty_lines)
-        os << line << '\n';
+std::ostream &Lexer::print_highlighted(std::ostream &os, int lines) const {
+    auto n = (int)pretty_lines.size();
+
+    for(auto idx = std::max(0, n - lines); idx < n; idx++)
+        os << pretty_lines[idx] << '\n';
+
     return os;
 }
+
+std::ostream &Lexer::blame_token(std::ostream &os, const Token &token) {
+    finish_line();
+
+    print_highlighted(os, 5);
+
+    os << std::string(token.position.offset(), ' ')
+       << COLOR::as_red(std::string(token.size(), '~'))
+       << std::endl;
+    return os;
+}
+
 
 uint8_t Lexer::parse_digit(uint8_t base) {
     char n = static_cast<char>(std::cin.peek());
@@ -504,10 +519,7 @@ void Lexer::warn(const std::string &value) const {
 [[noreturn]] void Lexer::error(const std::string &message) {
     auto error_position = position;
 
-    while(!std::cin.eof() && read_char() != '\n');
-
-    while(pretty_lines.back().empty())
-        pretty_lines.pop_back();
+    finish_line();
 
     for(const auto &line: pretty_lines) {
         std::cerr << line << '\n';
@@ -516,16 +528,23 @@ void Lexer::warn(const std::string &value) const {
     auto offset = std::string(std::max(error_position.offset() - 1, 0), ' ');
 
     std::cerr << offset
-              << ESC_S << COL_RED
+              << COLOR::RED
               << '^'
               << std::string(message.size() - 1, '~')
               << '\n'
               << offset
               << message
-              << ESC_S << COL_RESET
+              << COLOR::RESET
               << std::endl;
 
     throw_error(error_position);
+}
+
+void Lexer::finish_line() {
+    while(!std::cin.eof() && read_char() != '\n');
+
+    while(pretty_lines.back().empty())
+        pretty_lines.pop_back();
 }
 
 
@@ -538,16 +557,16 @@ void Lexer::set_type(CharType new_type) {
 
     col_type = new_type;
     if(col_type == CharType::NEUTRAL) {
-        line += ESC_S + COL_RESET;
+        line += COLOR::RESET;
         return;
     }
     if(col_type == CharType::KEYWORD) {
-        line += ESC_S + COL_ORANGE + word_buffer;
+        line += COLOR::ORANGE + word_buffer;
         word_buffer = "";
         return;
     }
     if(col_type == CharType::IDENTIFIER) {
-        line += ESC_S + COL_LIGHT + word_buffer;
+        line += COLOR::LIGHT + word_buffer;
         word_buffer = "";
         return;
     }
@@ -556,15 +575,15 @@ void Lexer::set_type(CharType new_type) {
     line.pop_back();
 
     if(col_type == CharType::NUMBER) {
-        line += ESC_S + COL_BLUE + last_c;
+        line += COLOR::BLUE + last_c;
     }
     if(col_type == CharType::STRING) {
-        line += ESC_S + COL_GREEN + last_c;
+        line += COLOR::GREEN + last_c;
     }
     if(col_type == CharType::KEY_OR_ID) {
         word_buffer += last_c;
     }
     if(col_type == CharType::COMMENT) {
-        line += ESC_S + COL_GREY + last_c;
+        line += COLOR::GREY + last_c;
     }
 }

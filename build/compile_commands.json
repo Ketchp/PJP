@@ -23,5 +23,10 @@
   "directory": "/home/stefan/FIT/PJP/slavkste/build",
   "command": "/usr/bin/c++  -I/home/stefan/FIT/PJP/slavkste/src -I/usr/lib/llvm-14/include -Wall -Wextra -pedantic  -g -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++20 -o CMakeFiles/mila.dir/src/Token.cpp.o -c /home/stefan/FIT/PJP/slavkste/src/Token.cpp",
   "file": "/home/stefan/FIT/PJP/slavkste/src/Token.cpp"
+},
+{
+  "directory": "/home/stefan/FIT/PJP/slavkste/build",
+  "command": "/usr/bin/c++  -I/home/stefan/FIT/PJP/slavkste/src -I/usr/lib/llvm-14/include -Wall -Wextra -pedantic  -g -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++20 -o CMakeFiles/mila.dir/src/Color.cpp.o -c /home/stefan/FIT/PJP/slavkste/src/Color.cpp",
+  "file": "/home/stefan/FIT/PJP/slavkste/src/Color.cpp"
 }
 ]

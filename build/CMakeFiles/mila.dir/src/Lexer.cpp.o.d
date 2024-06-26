@@ -155,7 +155,13 @@ CMakeFiles/mila.dir/src/Lexer.cpp.o: \
  /usr/include/c++/13/bits/basic_ios.tcc \
  /usr/include/c++/13/bits/ostream.tcc /usr/include/c++/13/istream \
  /usr/include/c++/13/bits/istream.tcc \
- /home/stefan/FIT/PJP/slavkste/src/Token.hpp /usr/include/c++/13/vector \
+ /home/stefan/FIT/PJP/slavkste/src/Token.hpp /usr/include/c++/13/set \
+ /usr/include/c++/13/bits/stl_tree.h \
+ /usr/include/c++/13/ext/aligned_buffer.h \
+ /usr/include/c++/13/bits/node_handle.h \
+ /usr/include/c++/13/bits/stl_set.h \
+ /usr/include/c++/13/bits/stl_multiset.h \
+ /usr/include/c++/13/bits/erase_if.h /usr/include/c++/13/vector \
  /usr/include/c++/13/bits/stl_uninitialized.h \
  /usr/include/c++/13/bits/stl_vector.h \
  /usr/include/c++/13/bits/stl_bvector.h \
@@ -165,8 +171,9 @@ CMakeFiles/mila.dir/src/Lexer.cpp.o: \
  /usr/include/c++/13/bits/parse_numbers.h /usr/include/c++/13/cstdint \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
- /usr/include/c++/13/format /usr/include/c++/13/array \
- /usr/include/c++/13/charconv /usr/include/c++/13/locale \
+ /home/stefan/FIT/PJP/slavkste/src/Color.hpp /usr/include/c++/13/format \
+ /usr/include/c++/13/array /usr/include/c++/13/charconv \
+ /usr/include/c++/13/locale \
  /usr/include/c++/13/bits/locale_facets_nonio.h /usr/include/c++/13/ctime \
  /usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/messages_members.h \

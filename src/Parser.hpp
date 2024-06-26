@@ -25,36 +25,15 @@ class Parser {
 public:
     Parser();
 
-    bool parse() {
-        try {
-            program = parse_mila();
-        } catch (const std::exception &e) {
-            std::cerr << e.what() << std::endl;
-            return false;
-        }
-
-        return true;
-    }
-
-    std::ostream &print_lexer_output(std::ostream &os) const {
-        return lexer.print_highlighted(os);
-    }
-
+    bool parse();
+    std::ostream &print_lexer_output(std::ostream &os) const;
     std::shared_ptr<llvm::Module> generate();  // generate
     std::ostream &format_ast(std::ostream &os) const;
 private:
     std::shared_ptr<llvm::Module> _generate();
     static void _check_unused(const Function &mila, bool is_global);
 
-    std::set<TokenType> attempted_matches;
-
-    Token get_token() {
-        attempted_matches.clear();  // we successfully matched token
-
-        auto temp = current_token;
-        current_token = lexer.get_token();
-        return temp;
-    }
+    Token get_token();
 
     template<bool required = true>
     Token match(TokenType accept) {
@@ -78,36 +57,36 @@ private:
         return NO_MATCH<required>();
     }
 
-    Token try_match(TokenType accept) {
-        return match<false>(accept);
-    }
-
-    [[nodiscard]] bool peek(TokenType accept) {
-        attempted_matches.emplace(accept);
-        return current_token.type == accept;
-    }
-
-    [[nodiscard]] bool peek(std::initializer_list<TokenType> accept) {
-        return std::any_of(
-                accept.begin(),
-                accept.end(),
-                [this](TokenType t){
-                    return peek(t);
-                }
-        );
-    }
-
-    [[noreturn]] static void throw_error(std::string value) {
-        throw ParserError(std::move(value));
-    }
-
-    Lexer lexer;
-    Token current_token;
-    std::unique_ptr<Mila> program;
-    std::shared_ptr<SymbolTable> current_table;  // context in which variables are looked for
+    Token try_match(TokenType accept);
+    [[nodiscard]] bool peek(TokenType accept);
+    [[nodiscard]] bool peek(std::initializer_list<TokenType> accept);
 
     template<bool required>
     Token NO_MATCH();
+
+    [[noreturn]] static void error(const std::string &message) {
+        std::cerr << COLOR::as_red(message) << std::endl;
+        throw_error("");
+    }
+
+    [[noreturn]] void no_match(const std::string &message) {
+        lexer.blame_token(std::cerr, current_token);
+        std::cerr << COLOR::as_red(message) << std::endl;
+
+        if(attempted_matches.size() > 1)
+            std::cerr << COLOR::as_red("Attempted matches: ");
+        else
+            std::cerr << COLOR::as_red("Attempted to match: ");
+
+        std::cerr << COLOR::RED
+                  << attempted_matches
+                  << COLOR::RESET
+                  << std::endl;
+
+        throw_error("");
+    }
+
+    [[noreturn]] static void throw_error(std::string value);
 
     std::unique_ptr<Mila> parse_mila();
 
@@ -161,7 +140,14 @@ private:
     Mila_int_T parse_literal_integer();
     std::unique_ptr<Expression> parse_subscript();
 
+    std::set<TokenType> attempted_matches;
+
     std::shared_ptr<llvm::LLVMContext> mila_context;   // llvm context
     std::shared_ptr<llvm::IRBuilder<>> mila_builder;   // llvm builder
     std::shared_ptr<llvm::Module> mila_module;         // llvm module
+
+    Lexer lexer;
+    Token current_token;
+    std::unique_ptr<Mila> program;
+    std::shared_ptr<SymbolTable> current_table;  // context in which variables are looked for
 };

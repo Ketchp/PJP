@@ -1,0 +1,9 @@
+program error;
+
+procedure blah(); forward;
+
+const a = 0;
+
+begin
+    a a
+end.

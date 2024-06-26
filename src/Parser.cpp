@@ -8,6 +8,21 @@ Parser::Parser()
     : current_token{lexer.get_token()}
 {}
 
+bool Parser::parse() {
+    try {
+        program = parse_mila();
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+std::ostream &Parser::print_lexer_output(std::ostream &os) const {
+    return lexer.print_highlighted(os);
+}
+
 std::ostream &Parser::format_ast(std::ostream &os) const {
     if(program == nullptr)
         throw ParserError{"Program not parsed yet."};
@@ -16,14 +31,45 @@ std::ostream &Parser::format_ast(std::ostream &os) const {
     return program->format_mila(os, conf);
 }
 
+Token Parser::get_token() {
+    attempted_matches.clear();  // we successfully matched token
+
+    auto temp = current_token;
+    current_token = lexer.get_token();
+    return temp;
+}
+
+Token Parser::try_match(TokenType accept)  {
+    return match<false>(accept);
+}
+
+bool Parser::peek(TokenType accept)  {
+    attempted_matches.emplace(accept);
+    return current_token.type == accept;
+}
+
+bool Parser::peek(std::initializer_list<TokenType> accept) {
+    return std::any_of(
+            accept.begin(),
+            accept.end(),
+            [this](TokenType t){
+                return peek(t);
+            }
+    );
+}
+
 template<>
 Token Parser::NO_MATCH<true>() {
-    throw_error("todo");
+    no_match("Failed to match token:");
 }
 
 template<>
 Token Parser::NO_MATCH<false>() {
     return Token::NO_MATCH();
+}
+
+void Parser::throw_error(std::string value) {
+    throw ParserError(std::move(value));
 }
 
 
@@ -119,7 +165,7 @@ std::unique_ptr<Mila> Parser::parse_mila() {
     }
 
     if(mila->implementation == nullptr)
-        throw_error("todo");
+        error("program must contain main block");
 
     _check_unused(*mila, true);
 
@@ -238,7 +284,7 @@ std::unique_ptr<Statement> Parser::parse_statement() {
         return parse_break_statement();
     if(peek(first::Expression))
         return parse_expression();
-    Parser::throw_error("TODO");
+    no_match("statement could not be matched");
 }
 
 std::unique_ptr<Statements> Parser::parse_statements() {
@@ -260,7 +306,7 @@ void Parser::parse_variables(Function &function) {
     else if(peek(TokenType::TOK_CONST))
         parse_variables_const(function);
     else
-        throw_error("TODO");
+        no_match("variable/const declaration must start with 'const' or 'var'");
 }
 
 void Parser::parse_variables_var(Function &function) {
@@ -285,13 +331,8 @@ void Parser::parse_variables_const(Function &function) {
 
         match(TokenType::TOK_EQUAL);
 
-        try {
-            Mila_variant_T value = parse_expression()->get_value();
-
-            function.function_type->local_variables->add_const(identifiers, value);
-        } catch (const std::bad_cast &) {
-            throw_error("TODO");
-        }
+        Mila_variant_T value = parse_expression()->get_value();
+        function.function_type->local_variables->add_const(identifiers, value);
 
         match(TokenType::TOK_SEMICOLON);
     } while(peek(TokenType::TOK_IDENTIFIER));
@@ -490,25 +531,28 @@ std::unique_ptr<Expression> Parser::parse_L3() {
 }
 
 std::unique_ptr<Expression> Parser::parse_L2() {
+    if(peek(literal_or_identifier))
+        return parse_L1();
+    if(peek(TokenType::TOK_BRACE_L))
+        return parse_L2_();
     if(try_match(TokenType::TOK_PLUS))
         return std::make_unique<UnaryExpression<UnaryOp::PLUS>>(parse_L2());
     if(try_match(TokenType::TOK_MINUS))
         return std::make_unique<UnaryExpression<UnaryOp::MINUS>>(parse_L2());
-    if(try_match(TokenType::TOK_NOT))
-        return std::make_unique<UnaryExpression<UnaryOp::NOT>>(parse_L2());
-    if(peek(TokenType::TOK_BRACE_L))
-        return parse_L2_();
-    if(peek(literal_or_identifier))
-        return parse_L1();
-    Parser::throw_error(std::to_string(__LINE__) + " TODO");
+    match(TokenType::TOK_NOT);
+    return std::make_unique<UnaryExpression<UnaryOp::NOT>>(parse_L2());
 }
 
 std::unique_ptr<Expression> Parser::parse_L1() {
-    if(auto token = try_match(TokenType::TOK_IDENTIFIER))
-        return parse_L1_(std::make_unique<IdentifierExpression>(Identifier{token}, current_table.get()));
     if(peek(literal))
         return parse_L1_(parse_literal_expression());
-    Parser::throw_error("TODO");
+
+    return parse_L1_(
+            std::make_unique<IdentifierExpression>(
+                Identifier{match(TokenType::TOK_IDENTIFIER)},
+                current_table.get()
+            )
+    );
 }
 
 
@@ -641,7 +685,7 @@ std::unique_ptr<Expression> Parser::parse_L2_() {
         return parse_L1_(std::move(lhs));
     }
 
-    Parser::throw_error("TODO");
+    no_match("unexpected token after '('");
 }
 
 
@@ -663,7 +707,7 @@ std::unique_ptr<Expression> Parser::parse_L1_(std::unique_ptr<Expression> lhs) {
                          )
         );
 
-    Parser::throw_error("TODO");
+    no_match("L1 expression followed by unexpected token");
 }
 
 

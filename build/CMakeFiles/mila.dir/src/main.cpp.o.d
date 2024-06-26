@@ -392,6 +392,7 @@ CMakeFiles/mila.dir/src/main.cpp.o: \
  /home/stefan/FIT/PJP/slavkste/src/Lexer.hpp \
  /home/stefan/FIT/PJP/slavkste/src/Token.hpp /usr/include/c++/13/variant \
  /usr/include/c++/13/bits/parse_numbers.h \
+ /home/stefan/FIT/PJP/slavkste/src/Color.hpp \
  /home/stefan/FIT/PJP/slavkste/src/Node.hpp /usr/include/c++/13/map \
  /usr/include/c++/13/bits/stl_map.h \
  /usr/include/c++/13/bits/stl_multimap.h /usr/include/c++/13/sstream \

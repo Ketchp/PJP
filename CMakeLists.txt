@@ -28,6 +28,8 @@ add_executable(
         src/Token.hpp
         src/Token.cpp
         src/first_follow.hpp
+        src/Color.hpp
+        src/Color.cpp
 )
 
 target_include_directories(mila PRIVATE ${LLVM_INCLUDE_DIRS})

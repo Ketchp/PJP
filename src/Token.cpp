@@ -38,6 +38,135 @@ void Pos::new_line() {
     offset() = 0;
 }
 
+std::string to_string(const TokenType &value) {
+    if(value == TokenType::TOK_BEGIN)
+        return "begin";
+    if(value == TokenType::TOK_END)
+        return "end";
+    if(value == TokenType::TOK_CONST)
+        return "const";
+    if(value == TokenType::TOK_PROCEDURE)
+        return "procedure";
+    if(value == TokenType::TOK_FORWARD)
+        return "forward";
+    if(value == TokenType::TOK_FUNCTION)
+        return "function";
+    if(value == TokenType::TOK_IF)
+        return "if";
+    if(value == TokenType::TOK_THEN)
+        return "then";
+    if(value == TokenType::TOK_ELSE)
+        return "else";
+    if(value == TokenType::TOK_PROGRAM)
+        return "program";
+    if(value == TokenType::TOK_WHILE)
+        return "while";
+    if(value == TokenType::TOK_EXIT)
+        return "exit";
+    if(value == TokenType::TOK_VAR)
+        return "var";
+    if(value == TokenType::TOK_INTEGER)
+        return "integer";
+    if(value == TokenType::TOK_REAL)
+        return "real";
+    if(value == TokenType::TOK_STRING)
+        return "string";
+    if(value == TokenType::TOK_FOR)
+        return "for";
+    if(value == TokenType::TOK_DO)
+        return "do";
+    if(value == TokenType::TOK_OF)
+        return "of";
+    if(value == TokenType::TOK_TO)
+        return "to";
+    if(value == TokenType::TOK_DOWNTO)
+        return "downto";
+    if(value == TokenType::TOK_ARRAY)
+        return "array";
+    if(value == TokenType::TOK_CONTINUE)
+        return "continue";
+    if(value == TokenType::TOK_BREAK)
+        return "break";
+    if(value == TokenType::TOK_BRACE_L)
+        return "(";
+    if(value == TokenType::TOK_BRACE_R)
+        return ")";
+    if(value == TokenType::TOK_SQUARE_BRACE_L)
+        return "[";
+    if(value == TokenType::TOK_SQUARE_BRACE_R)
+        return "]";
+    if(value == TokenType::TOK_SEMICOLON)
+        return ";";
+    if(value == TokenType::TOK_COMMA)
+        return ",";
+    if(value == TokenType::TOK_COLON)
+        return ":";
+    if(value == TokenType::TOK_DOT)
+        return ".";
+    if(value == TokenType::TOK_MINUS)
+        return "-";
+    if(value == TokenType::TOK_PLUS)
+        return "+";
+    if(value == TokenType::TOK_STAR)
+        return "*";
+    if(value == TokenType::TOK_EQUAL)
+        return "=";
+    if(value == TokenType::TOK_LESS)
+        return "<";
+    if(value == TokenType::TOK_GREATER)
+        return ">";
+    if(value == TokenType::TOK_NOT_EQUAL)
+        return "<>";
+    if(value == TokenType::TOK_LESS_EQUAL)
+        return "<=";
+    if(value == TokenType::TOK_GREATER_EQUAL)
+        return ">=";
+    if(value == TokenType::TOK_ASSIGN)
+        return ":=";
+    if(value == TokenType::TOK_OR)
+        return "or";
+    if(value == TokenType::TOK_DOT_DOT)
+        return "..";
+    if(value == TokenType::TOK_MOD)
+        return "mod";
+    if(value == TokenType::TOK_DIV)
+        return "div";
+    if(value == TokenType::TOK_NOT)
+        return "not";
+    if(value == TokenType::TOK_AND)
+        return "and";
+    if(value == TokenType::TOK_XOR)
+        return "xor";
+
+    if(value == TokenType::TOK_EOF)
+        return "EOF";
+
+    if(value == TokenType::TOK_IDENTIFIER)
+        return "identifier";
+
+    if(value == TokenType::TOK_LITERAL_INT)
+        return "literal integer";
+    if(value == TokenType::TOK_LITERAL_REAL)
+        return "literal real";
+    if(value == TokenType::TOK_LITERAL_STRING)
+        return "literal string";
+    return "---";
+}
+
+std::ostream &operator<<(std::ostream &os, const std::set<TokenType> &values) {
+    if(!values.empty()) {
+        auto last = --values.end();
+        for(auto it = values.begin(); it != last; it++)
+            os << *it << ", ";
+        os << *last;
+    }
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const TokenType &value) {
+    return os << to_string(value);
+}
+
 
 /******************
 *   class Token   *
@@ -71,6 +200,10 @@ Token::Token(Pos p, Mila_string_T identifier, TokenType t)
     return type == TokenType::TOK_EOF;
 }
 
+[[nodiscard]] size_t Token::size() const {
+    return to_string(*this).size();
+}
+
 [[nodiscard]] Token Token::NO_MATCH() {
     return Token{{}, TokenType::NO_MATCH};
 }
@@ -89,114 +222,21 @@ Token::Token(Pos p, Mila_string_T identifier, TokenType t)
     }
 }
 
+std::string to_string(const Token &token) {
+    if(token.type == TokenType::TOK_IDENTIFIER)
+        return std::get<Mila_string_T>(token.data);
+
+    if(token.type == TokenType::TOK_LITERAL_INT)
+        return std::to_string(std::get<Mila_int_T>(token.data));
+    if(token.type == TokenType::TOK_LITERAL_REAL)
+        return std::to_string(std::get<Mila_real_T>(token.data));
+    if(token.type == TokenType::TOK_LITERAL_STRING)
+        return '\'' + std::get<Mila_string_T>(token.data) + '\'';
+    return to_string(token.type);
+}
+
 std::ostream &operator<<(std::ostream &os, const Token &token) {
-    if(token.type == TokenType::TOK_EOF)
-        return os << "EOF";
     if(token.type == TokenType::TOK_IDENTIFIER)
         return os << '{' << std::get<Mila_string_T>(token.data) << '}';
-    if(token.type == TokenType::TOK_LITERAL_INT)
-        return os << std::get<Mila_int_T>(token.data);
-    if(token.type == TokenType::TOK_LITERAL_REAL)
-        return os << std::get<Mila_real_T>(token.data);
-    if(token.type == TokenType::TOK_LITERAL_STRING)
-        return os << '\'' << std::get<Mila_string_T>(token.data) << '\'';
-    if(token.type == TokenType::TOK_BEGIN)
-        return os << "begin";
-    if(token.type == TokenType::TOK_END)
-        return os << "end";
-    if(token.type == TokenType::TOK_CONST)
-        return os << "const";
-    if(token.type == TokenType::TOK_PROCEDURE)
-        return os << "procedure";
-    if(token.type == TokenType::TOK_FORWARD)
-        return os << "forward";
-    if(token.type == TokenType::TOK_FUNCTION)
-        return os << "function";
-    if(token.type == TokenType::TOK_IF)
-        return os << "if";
-    if(token.type == TokenType::TOK_THEN)
-        return os << "then";
-    if(token.type == TokenType::TOK_ELSE)
-        return os << "else";
-    if(token.type == TokenType::TOK_PROGRAM)
-        return os << "program";
-    if(token.type == TokenType::TOK_WHILE)
-        return os << "while";
-    if(token.type == TokenType::TOK_EXIT)
-        return os << "exit";
-    if(token.type == TokenType::TOK_VAR)
-        return os << "var";
-    if(token.type == TokenType::TOK_INTEGER)
-        return os << "integer";
-    if(token.type == TokenType::TOK_REAL)
-        return os << "real";
-    if(token.type == TokenType::TOK_STRING)
-        return os << "string";
-    if(token.type == TokenType::TOK_FOR)
-        return os << "for";
-    if(token.type == TokenType::TOK_DO)
-        return os << "do";
-    if(token.type == TokenType::TOK_OF)
-        return os << "of";
-    if(token.type == TokenType::TOK_TO)
-        return os << "to";
-    if(token.type == TokenType::TOK_DOWNTO)
-        return os << "downto";
-    if(token.type == TokenType::TOK_ARRAY)
-        return os << "array";
-    if(token.type == TokenType::TOK_CONTINUE)
-        return os << "continue";
-    if(token.type == TokenType::TOK_BREAK)
-        return os << "break";
-    if(token.type == TokenType::TOK_BRACE_L)
-        return os << "(";
-    if(token.type == TokenType::TOK_BRACE_R)
-        return os << ")";
-    if(token.type == TokenType::TOK_SQUARE_BRACE_L)
-        return os << "[";
-    if(token.type == TokenType::TOK_SQUARE_BRACE_R)
-        return os << "]";
-    if(token.type == TokenType::TOK_SEMICOLON)
-        return os << ";";
-    if(token.type == TokenType::TOK_COMMA)
-        return os << ",";
-    if(token.type == TokenType::TOK_COLON)
-        return os << ":";
-    if(token.type == TokenType::TOK_DOT)
-        return os << ".";
-    if(token.type == TokenType::TOK_MINUS)
-        return os << "-";
-    if(token.type == TokenType::TOK_PLUS)
-        return os << "+";
-    if(token.type == TokenType::TOK_STAR)
-        return os << "*";
-    if(token.type == TokenType::TOK_EQUAL)
-        return os << "=";
-    if(token.type == TokenType::TOK_LESS)
-        return os << "<";
-    if(token.type == TokenType::TOK_GREATER)
-        return os << ">";
-    if(token.type == TokenType::TOK_NOT_EQUAL)
-        return os << "<>";
-    if(token.type == TokenType::TOK_LESS_EQUAL)
-        return os << "<=";
-    if(token.type == TokenType::TOK_GREATER_EQUAL)
-        return os << ">=";
-    if(token.type == TokenType::TOK_ASSIGN)
-        return os << ":=";
-    if(token.type == TokenType::TOK_OR)
-        return os << "or";
-    if(token.type == TokenType::TOK_DOT_DOT)
-        return os << "..";
-    if(token.type == TokenType::TOK_MOD)
-        return os << "mod";
-    if(token.type == TokenType::TOK_DIV)
-        return os << "div";
-    if(token.type == TokenType::TOK_NOT)
-        return os << "not";
-    if(token.type == TokenType::TOK_AND)
-        return os << "and";
-    if(token.type == TokenType::TOK_XOR)
-        return os << "xor";
-    throw std::exception{};
+    return os << to_string(token);
 }

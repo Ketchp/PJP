@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/stefan/FIT/PJP/slavkste/src/Color.cpp" "CMakeFiles/mila.dir/src/Color.cpp.o" "gcc" "CMakeFiles/mila.dir/src/Color.cpp.o.d"
   "/home/stefan/FIT/PJP/slavkste/src/Lexer.cpp" "CMakeFiles/mila.dir/src/Lexer.cpp.o" "gcc" "CMakeFiles/mila.dir/src/Lexer.cpp.o.d"
   "/home/stefan/FIT/PJP/slavkste/src/Node.cpp" "CMakeFiles/mila.dir/src/Node.cpp.o" "gcc" "CMakeFiles/mila.dir/src/Node.cpp.o.d"
   "/home/stefan/FIT/PJP/slavkste/src/Parser.cpp" "CMakeFiles/mila.dir/src/Parser.cpp.o" "gcc" "CMakeFiles/mila.dir/src/Parser.cpp.o.d"

@@ -1,0 +1,7 @@
+program error;
+
+procedure blah(); forward;
+
+begin
+    a a
+end.

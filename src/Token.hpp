@@ -1,11 +1,13 @@
 #pragma once
 
+#include <set>
 #include <tuple>
 #include <string>
 #include <vector>
 #include <limits>
 #include <variant>
 #include <cstdint>
+#include <iostream>
 #include <exception>
 
 
@@ -111,6 +113,10 @@ enum class TokenType {
     TOK_XOR,                   // xor
 };
 
+std::string to_string(const TokenType &value);
+std::ostream &operator<<(std::ostream &os, const std::set<TokenType> &value);
+std::ostream &operator<<(std::ostream &os, const TokenType &value);
+
 /*
  * Lexer returns tokens [0-255] if it is an unknown character, otherwise one of these for known things.
  * Here are all valid tokens:
@@ -123,6 +129,7 @@ struct Token {
     Token(Pos p, Mila_string_T identifier, TokenType t);
 
     [[nodiscard]] bool eof() const;
+    [[nodiscard]] size_t size() const;
 
     [[nodiscard]] static Token NO_MATCH();
     [[nodiscard]] explicit operator bool() const noexcept;
@@ -134,4 +141,5 @@ private:
     [[nodiscard]] static TokenType is_identifier_or_str_literal(TokenType t);
 };
 
+std::string to_string(const Token &token);
 std::ostream &operator<<(std::ostream &os, const Token &token);

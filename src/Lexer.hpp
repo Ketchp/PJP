@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Token.hpp"
+#include "Color.hpp"
 
 
 struct LexerError: std::exception {
@@ -23,18 +24,10 @@ enum class CharType {
     COMMENT,
 };
 
-constexpr std::string ESC_S{"\x1B["};
-constexpr std::string COL_RESET{"0m"};
-constexpr std::string COL_BLUE{"38;5;32m"};     // number
-constexpr std::string COL_GREEN{"38;5;83m"};    // string
-constexpr std::string COL_ORANGE{"38;5;214m"};  // keyword
-constexpr std::string COL_LIGHT{"38;5;229m"};   // identifier
-constexpr std::string COL_GREY{"38;5;59m"};     // comment
-constexpr std::string COL_RED{"38;5;196m"};      // error
-
 struct Lexer {
     [[nodiscard]] Token get_token();
-    std::ostream &print_highlighted(std::ostream &os) const;
+    std::ostream &print_highlighted(std::ostream &os, int line = std::numeric_limits<int>::max()) const;
+    std::ostream &blame_token(std::ostream &os, const Token &token);
 private:
     const static uint8_t DIGIT_NO = -1;
     const static uint8_t DIGIT_IDENT = -2;
@@ -63,6 +56,7 @@ private:
     void warn(const std::string &value) const;
     [[noreturn]] void error(const std::string &message);
     [[noreturn]] static void throw_error(Pos err_pos, const std::string &value = "");
+    void finish_line();
 
     char read_char();
 
