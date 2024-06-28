@@ -1,3 +1,9 @@
+# PJP
+
+This repository contains my semestral work.
+Assignment is creating compiler front-end for play-language `Mila`.
+
+
 # Semestral Work
 
 This is the repository that serves as a simple template for semestral work.
